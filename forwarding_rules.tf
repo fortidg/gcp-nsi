@@ -1,0 +1,35 @@
+# Forwarding Rules for Internal Load Balancer
+resource "google_compute_forwarding_rule" "fortigate_forwarding_rules" {
+  for_each = {
+    "us-west1a" = {
+      name   = "${local.prefix}-fgt-us-west1a"
+      zone   = "${var.region}-a"
+    }
+    "us-west1b" = {
+      name   = "${local.prefix}-fgt-us-west1b"
+      zone   = "${var.region}-b"
+    }
+    "us-west1c" = {
+      name   = "${local.prefix}-fgt-us-west1c1"
+      zone   = "${var.region}-c"
+    }
+  }
+
+  name                  = each.value.name
+  region                = var.region
+  load_balancing_scheme = "INTERNAL"
+  ip_protocol           = "UDP"
+  ports                 = ["6081"]
+  network_tier          = "PREMIUM"
+  
+  # Reference the backend service
+  backend_service = google_compute_region_backend_service.fortigate_backend_service.id
+  
+  # Use the inspection subnet
+  subnetwork = google_compute_subnetwork.subnets["inspection_west"].id
+
+  # Allow global access for NSI
+  allow_global_access = true
+
+  depends_on = [google_compute_region_backend_service.fortigate_backend_service]
+}

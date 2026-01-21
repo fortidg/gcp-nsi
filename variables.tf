@@ -1,0 +1,95 @@
+# Required Variables
+variable "project_id" {
+  description = "The GCP project ID"
+  type        = string
+}
+
+variable "region" {
+  description = "The GCP region for resources"
+  type        = string
+  default     = "us-west1"
+}
+
+variable "prefix" {
+  description = "Prefix for resource names"
+  type        = string
+  default     = "fgt-nsi"
+}
+
+# FortiGate Configuration Variables
+variable "fortigate_machine_type" {
+  description = "Machine type for FortiGate instances"
+  type        = string
+  default     = "c4-standard-4"
+}
+
+variable "fortigate_instance_count" {
+  description = "Number of FortiGate instances in the MIG"
+  type        = number
+  default     = 3
+}
+
+variable "zones" {
+  description = "List of zones for distributing FortiGate instances"
+  type        = list(string)
+  default     = ["us-west1-a", "us-west1-b", "us-west1-c"]
+}
+
+# FortiGate Admin Configuration
+variable "admin_port" {
+  description = "Admin port for FortiGate management"
+  type        = number
+  default     = 8443
+}
+
+variable "admin_password" {
+  description = "Admin password for FortiGate management"
+  type        = string
+  sensitive   = true
+  default     = "Fortinet123!"
+}
+
+# Network Configuration Variables
+variable "inspection_subnet_cidr" {
+  description = "CIDR range for inspection subnet"
+  type        = string
+  default     = "10.50.160.0/24"
+}
+
+variable "management_subnet_cidr" {
+  description = "CIDR range for management subnet"
+  type        = string
+  default     = "10.50.180.0/24"
+}
+
+variable "web_subnet_cidr" {
+  description = "CIDR range for web subnet"
+  type        = string
+  default     = "10.12.0.0/24"
+}
+
+# Load Balancer Configuration
+variable "health_check_port" {
+  description = "Port for health check"
+  type        = number
+  default     = 8080
+}
+
+variable "geneve_port" {
+  description = "Port for Geneve traffic"
+  type        = number
+  default     = 6081
+}
+
+# Optional Variables
+variable "enable_private_google_access" {
+  description = "Enable private Google access on subnets"
+  type        = bool
+  default     = true
+}
+
+variable "tags" {
+  description = "Additional tags to apply to resources"
+  type        = map(string)
+  default     = {}
+}

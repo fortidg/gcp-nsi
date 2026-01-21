@@ -1,0 +1,124 @@
+Create the data or traffic inspection VPC and subnets:
+gcloud compute networks create fgt-nsi-ib-new \
+    --subnet-mode=custom \
+    --description "NIS data or traffic VPC network with regional subnets"
+Create the inspection subnet in us-west1:
+gcloud compute networks subnets create fgt-nsi-west \
+    --network=fgt-nsi-ib-new \
+    --region=us-west1 \
+    --range=10.50.160.0/24 \
+    --enable-private-ip-google-access \
+    --description="Data or Traffic inspection Subnet in us-west1"
+Create firewall rules for Geneve traffic:
+Create a firewall rule to allow all ingress Geneve traffic:
+gcloud compute firewall-rules create fgt-nsi-allow-all-in \
+  --network=fgt-nsi-ib-new \
+  --allow=tcp:0-65535,udp:0-65535,icmp \
+  --source-ranges=0.0.0.0/0 \
+  --description="Allow all incoming data traffic for inspection"
+Create a firewall rule to allow all egress Geneve traffic:
+gcloud compute firewall-rules create fgt-nsi-allow-all-egr \
+  --network=fgt-nsi-ib-new \
+  --allow=tcp:0-65535,udp:0-65535,icmp \
+  --destination-ranges=0.0.0.0/0 \
+  --direction EGRESS \
+  --description="Allow all outgoing traffic for inspection"
+Create the FortiGate management VPC with subnets:
+ gcloud compute networks create fgt-nsi-ib-new-mgmt \
+   --subnet-mode=custom \
+   --description="FortiGate management VPC network with regional subnets"
+
+Create the management subnet in us-west1:
+gcloud compute networks subnets create fgt-nsi1-mgmt-west \
+    --network=fgt-nsi-ib-new-mgmt \
+    --region=us-west1 \
+    --range=10.50.180.0/24 \
+    --enable-private-ip-google-access \
+    --description="FortiGate management Subnet in us-west1"
+Create firewall rules for management traffic:
+Create a firewall rule to allow all ingress management traffic:
+gcloud compute firewall-rules create fgt-nsi-allow-all-ing1 \
+    --network=fgt-nsi-ib-new-mgmt \
+    --allow=tcp:0-65535,udp:0-65535,icmp \
+    --source-ranges=0.0.0.0/0 \
+    --description="FortiGate management allow all incoming traffic"
+Create a firewall rule to allow all egress management traffic:
+gcloud compute firewall-rules create fgt-nsi-allow-all-egr1 \
+    --network=fgt-nsi-ib-new-mgmt \
+    --allow=tcp:0-65535,udp:0-65535,icmp \
+    --direction=EGRESS \
+    --destination-ranges=0.0.0.0/0 \
+    --description="FortiGate management allow all outgoing traffic"
+Create the web VPC and subnets:
+gcloud compute networks create fgt-nsi-ib-new-web \
+    --subnet-mode=custom \
+    --description="Public Web VPC network with regional subnets"
+Create a subnet in us-west1:
+gcloud compute networks subnets create fgt-nsi-web1-west \
+    --network=fgt-nsi-ib-new-web \
+    --region=us-west1 \
+    --range=10.12.0.0/24 \
+    --enable-private-ip-google-access \
+    --description="Public Web Subnet in us-west1"
+To create the FortiGate instance template:
+gcloud compute instance-templates create fgt-nsi762-v5 \
+  --project=<your project id> \
+  --machine-type=c4-standard-4 \
+  --network-interface=network-tier=PREMIUM,stack-type=IPV4_ONLY,subnet=fgt-nsi-west \
+  --add-network-interface=network-tier=PREMIUM,stack-type=IPV4_ONLY,subnet=fgt-nsi1-mgmt-west \
+  --region=us-west1 \
+  --create-disk=auto-delete=yes,boot=yes,device-name=instance-template-2,image=projects/fortigcp-project-001/global/images/fortinet-fgtondemand-763-20250423-001-w-license,mode=rw,size=10,type=pd-balanced
+To create a health check:
+This health check will be referenced throughout this document. Edit GCP CLI configuration examples to fit your environment.
+
+gcloud compute health-checks create http doc-nsi-hc
+To create the FortiGate-VM MIG:
+This step references the previously created instance template to create a FortiGate-VM managed instance group (MIG).
+
+gcloud compute instance-groups managed create fgt-nsi-us-west1-multi-ig \
+  --project=<your project id> \
+  --template=projects/<your project id>/global/instanceTemplates/fgt-nsi762-v5 \
+  --size=3 \
+  --zones=us-west1-a,us-west1-b
+To create a backend service:
+gcloud compute backend-services create fgt-nsi-us-west1-lb \
+    --load-balancing-scheme=INTERNAL \
+    --region=us-west1 \
+    --health-checks= doc-nsi-hc \
+    --protocol=UDP
+To add the MIG to the backend service:
+This backend service is referenced when creating the forwarding rules to pass traffic for inspection to the FortiGate-VMs.
+
+gcloud compute backend-services add-backend fgt-nsi-us-west1-lb \
+    --region=us-west1 \
+    --instance-group=fgt-nsi-us-west1-multi-ig \
+    --instance-group-region=us-west1
+To create forwarding rules:
+There is a forwarding rule for each zone of the FortiGate inspection. They are referenced when creating the NSI deployment group.
+
+gcloud compute forwarding-rules create fgt-us-west1a \
+    --region=us-west1 \
+    --load-balancing-scheme=INTERNAL \
+    --ip-protocol=UDP \
+    --ports=6081 \
+    --network-tier=PREMIUM \
+    --backend-service=fgt-nsi-us-west1-lb \
+    --subnet=fgt-nsi-west
+
+gcloud compute forwarding-rules create fgt-us-west1b \
+    --region=us-west1 \
+    --load-balancing-scheme=INTERNAL \
+    --ip-protocol=UDP \
+    --ports=6081 \
+    --network-tier=PREMIUM \
+    --backend-service=fgt-nsi-us-west1-lb \
+    --subnet=fgt-nsi-west
+
+gcloud compute forwarding-rules create fgt-us-west1c1 \
+    --region=us-west1 \
+    --load-balancing-scheme=INTERNAL \
+    --ip-protocol=UDP \
+    --ports=6081 \
+    --network-tier=PREMIUM \
+    --backend-service=fgt-nsi-us-west1-lb \
+    --subnet=fgt-nsi-west

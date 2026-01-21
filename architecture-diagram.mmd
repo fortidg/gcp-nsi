@@ -1,0 +1,109 @@
+graph TB
+    %% VPC Networks
+    subgraph "GCP Project"
+        subgraph "Inspection VPC (fgt-nsi-ib-new)"
+            INS_SUBNET["Inspection Subnet<br/>10.50.160.0/24<br/>us-west1"]
+        end
+        
+        subgraph "Management VPC (fgt-nsi-ib-new-mgmt)"
+            MGMT_SUBNET["Management Subnet<br/>10.50.180.0/24<br/>us-west1"]
+        end
+        
+        subgraph "Web VPC (fgt-nsi-ib-new-web)"
+            WEB_SUBNET["Web Subnet<br/>10.12.0.0/24<br/>us-west1"]
+        end
+    end
+
+    %% FortiGate Infrastructure
+    subgraph "FortiGate Infrastructure"
+        TEMPLATE["Instance Template<br/>fgt-nsi762-v5<br/>c4-standard-4"]
+        
+        subgraph "Managed Instance Group"
+            FGT1["FortiGate-1<br/>Zone: us-west1-a"]
+            FGT2["FortiGate-2<br/>Zone: us-west1-b"]
+            FGT3["FortiGate-3<br/>Zone: us-west1-c"]
+        end
+    end
+
+    %% Load Balancer Components
+    subgraph "Load Balancer"
+        HEALTH_CHECK["Health Check<br/>doc-nsi-hc<br/>Port: 8080"]
+        BACKEND_SERVICE["Backend Service<br/>fgt-nsi-us-west1-lb<br/>Protocol: UDP<br/>Internal LB"]
+        
+        subgraph "Forwarding Rules"
+            FWD_A["Forwarding Rule A<br/>fgt-us-west1a<br/>UDP:6081"]
+            FWD_B["Forwarding Rule B<br/>fgt-us-west1b<br/>UDP:6081"]
+            FWD_C["Forwarding Rule C<br/>fgt-us-west1c1<br/>UDP:6081"]
+        end
+    end
+
+    %% Firewall Rules
+    subgraph "Firewall Rules"
+        FW_INS_IN["Inspection VPC<br/>Allow All Ingress<br/>0.0.0.0/0"]
+        FW_INS_EG["Inspection VPC<br/>Allow All Egress<br/>0.0.0.0/0"]
+        FW_MGMT_IN["Management VPC<br/>Allow All Ingress<br/>0.0.0.0/0"]
+        FW_MGMT_EG["Management VPC<br/>Allow All Egress<br/>0.0.0.0/0"]
+    end
+
+    %% External Components
+    INTERNET["Internet"]
+    NSI_CLIENT["NSI Client<br/>Traffic Source"]
+
+    %% Connections
+    %% Instance Template to MIG
+    TEMPLATE -.->|creates| FGT1
+    TEMPLATE -.->|creates| FGT2
+    TEMPLATE -.->|creates| FGT3
+
+    %% Network Interfaces
+    FGT1 ---|Port1| INS_SUBNET
+    FGT1 ---|Port2| MGMT_SUBNET
+    FGT2 ---|Port1| INS_SUBNET
+    FGT2 ---|Port2| MGMT_SUBNET
+    FGT3 ---|Port1| INS_SUBNET
+    FGT3 ---|Port2| MGMT_SUBNET
+
+    %% Load Balancer Connections
+    HEALTH_CHECK -.->|monitors| FGT1
+    HEALTH_CHECK -.->|monitors| FGT2
+    HEALTH_CHECK -.->|monitors| FGT3
+
+    FGT1 ---|backend| BACKEND_SERVICE
+    FGT2 ---|backend| BACKEND_SERVICE
+    FGT3 ---|backend| BACKEND_SERVICE
+
+    BACKEND_SERVICE ---|references| FWD_A
+    BACKEND_SERVICE ---|references| FWD_B
+    BACKEND_SERVICE ---|references| FWD_C
+
+    %% Traffic Flow
+    NSI_CLIENT -->|Geneve Traffic<br/>UDP:6081| FWD_A
+    NSI_CLIENT -->|Geneve Traffic<br/>UDP:6081| FWD_B
+    NSI_CLIENT -->|Geneve Traffic<br/>UDP:6081| FWD_C
+
+    FWD_A -.->|load balances| INS_SUBNET
+    FWD_B -.->|load balances| INS_SUBNET
+    FWD_C -.->|load balances| INS_SUBNET
+
+    %% Management Access
+    INTERNET -->|HTTPS:8443<br/>Management| MGMT_SUBNET
+
+    %% Firewall Protection
+    FW_INS_IN -.->|protects| INS_SUBNET
+    FW_INS_EG -.->|protects| INS_SUBNET
+    FW_MGMT_IN -.->|protects| MGMT_SUBNET
+    FW_MGMT_EG -.->|protects| MGMT_SUBNET
+
+    %% Styling
+    classDef vpc fill:#e1f5fe
+    classDef subnet fill:#b3e5fc
+    classDef fortigate fill:#ffecb3
+    classDef loadbalancer fill:#c8e6c9
+    classDef firewall fill:#ffcdd2
+    classDef external fill:#f3e5f5
+
+    class INS_SUBNET,MGMT_SUBNET,WEB_SUBNET subnet
+    class FGT1,FGT2,FGT3,TEMPLATE fortigate
+    class HEALTH_CHECK,BACKEND_SERVICE,FWD_A,FWD_B,FWD_C loadbalancer
+    class FW_INS_IN,FW_INS_EG,FW_MGMT_IN,FW_MGMT_EG firewall
+    class INTERNET,NSI_CLIENT external

@@ -1,0 +1,40 @@
+# Example Terraform variables file for FortiGate NSI deployment
+# Copy this file to terraform.tfvars and customize the values
+
+# Required Variables
+project_id = "your-gcp-project-id"
+region     = "us-west1"
+prefix     = "fgt-nsi"
+
+# FortiGate Configuration
+fortigate_machine_type    = "c4-standard-4"
+fortigate_instance_count  = 3
+
+# Zones for FortiGate distribution (must be in the specified region)
+zones = [
+  "us-west1-a",
+  "us-west1-b",
+  "us-west1-c"
+]
+
+# Admin Configuration
+admin_port     = 8443
+admin_password = "YourSecurePasswordHere!"
+
+# Network Configuration (optional customization)
+# inspection_subnet_cidr  = "10.50.160.0/24"
+# management_subnet_cidr  = "10.50.180.0/24"
+# web_subnet_cidr        = "10.12.0.0/24"
+
+# Load Balancer Configuration (optional)
+# health_check_port = 8080
+# geneve_port      = 6081
+
+# Optional Settings
+# enable_private_google_access = true
+
+# Additional tags (optional)
+# tags = {
+#   environment = "production"
+#   team       = "networking"
+# }
