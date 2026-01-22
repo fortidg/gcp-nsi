@@ -7,7 +7,7 @@ variable "project_id" {
 variable "region" {
   description = "The GCP region for resources"
   type        = string
-  default     = "us-west1"
+  default     = "us-central1"
 }
 
 variable "prefix" {
@@ -26,13 +26,13 @@ variable "fortigate_machine_type" {
 variable "fortigate_instance_count" {
   description = "Number of FortiGate instances in the MIG"
   type        = number
-  default     = 3
+  default     = 2
 }
 
 variable "zones" {
   description = "List of zones for distributing FortiGate instances"
   type        = list(string)
-  default     = ["us-west1-a", "us-west1-b", "us-west1-c"]
+  default     = ["us-central1-a", "us-central1-b"]
 }
 
 # FortiGate Admin Configuration

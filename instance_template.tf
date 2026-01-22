@@ -13,8 +13,8 @@ resource "google_compute_instance_template" "fortigate_template" {
     device_name  = "instance-template-boot"
     mode         = "READ_WRITE"
     source_image = data.google_compute_image.fortigate_image.self_link
-    disk_type    = "pd-balanced"
-    disk_size_gb = 10
+    disk_type    = "hyperdisk-balanced"
+    disk_size_gb = 50
   }
 
   # Network interfaces
@@ -49,6 +49,8 @@ resource "google_compute_instance_template" "fortigate_template" {
     user-data     = templatefile("${path.module}/templates/fortigate-config.tpl", {
       admin_port    = var.admin_port
       admin_pass    = var.admin_password
+      mgmt_gw       = google_compute_subnetwork.subnets["management_west"].gateway_address
+      insp_gw = google_compute_subnetwork.subnets["inspection_west"].gateway_address
     })
   }
 

@@ -10,6 +10,7 @@ resource "google_compute_health_check" "fortigate_health_check" {
   http_health_check {
     port         = 8080
     request_path = "/"
+    response     = "OK"
   }
 }
 

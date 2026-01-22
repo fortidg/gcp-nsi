@@ -32,7 +32,7 @@ resource "random_string" "suffix" {
 
 # Data source for FortiGate image
 data "google_compute_image" "fortigate_image" {
-  family  = "fortigate-76-byol"
+  family  = "fortigate-76-payg"
   project = "fortigcp-project-001"
 }
 
@@ -189,6 +189,40 @@ locals {
         }
       ]
       description = "FortiGate management allow all outgoing traffic"
+    }
+
+    # Health check firewall rule for inspection network
+    inspection_health_check = {
+      name          = "${local.prefix}-fgt-allow-health-check"
+      network       = "inspection"
+      direction     = "INGRESS"
+      priority      = 1000
+      source_ranges = ["130.211.0.0/22", "35.191.0.0/16"]
+      target_tags   = ["allow-health-check"]
+      allow = [
+        {
+          protocol = "tcp"
+          ports    = ["8080"]
+        }
+      ]
+      description = "Allow Google Cloud health checks"
+    }
+
+    # Health check firewall rule for management network
+    management_health_check = {
+      name          = "${local.prefix}-fgt-allow-health-check-mgmt"
+      network       = "management"
+      direction     = "INGRESS"
+      priority      = 1000
+      source_ranges = ["130.211.0.0/22", "35.191.0.0/16"]
+      target_tags   = ["allow-health-check"]
+      allow = [
+        {
+          protocol = "tcp"
+          ports    = ["8080"]
+        }
+      ]
+      description = "Allow Google Cloud health checks on management network"
     }
   }
 }

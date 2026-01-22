@@ -14,6 +14,9 @@ resource "google_compute_firewall" "firewall_rules" {
   # Destination ranges for egress rules
   destination_ranges = try(each.value.destination_ranges, null)
 
+  # Target tags for specific instances
+  target_tags = try(each.value.target_tags, null)
+
   dynamic "allow" {
     for_each = each.value.allow
     content {
