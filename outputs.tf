@@ -95,24 +95,6 @@ output "firewall_rules" {
   }
 }
 
-# Instructions for NSI Deployment
-output "nsi_deployment_instructions" {
-  description = "Instructions for setting up NSI deployment groups"
-  value = <<-EOT
-To complete the NSI deployment, create deployment groups that reference these forwarding rules:
-
-Forwarding Rules for NSI deployment groups:
-%{for k, v in google_compute_forwarding_rule.fortigate_forwarding_rules}
-- Zone ${k}: ${v.name} (IP: ${v.ip_address})
-%{endfor}
-
-Use these forwarding rules when configuring your NSI deployment group in the GCP Console.
-The FortiGate instances are now ready to inspect traffic routed through the NSI.
-
-Management access will be available through the FortiGate instances' public IP addresses on port ${var.admin_port}.
-EOT
-}
-
 output "project_summary" {
   description = "Summary of the deployed resources"
   value = {
@@ -123,4 +105,122 @@ output "project_summary" {
     zones                 = var.zones
     admin_port           = var.admin_port
   }
+}
+
+# Web servers output
+output "web_servers" {
+  description = "Web server instances for testing"
+  value = {
+    for k, v in google_compute_instance.web_servers : k => {
+      id           = v.id
+      name         = v.name
+      internal_ip  = v.network_interface[0].network_ip
+      external_ip  = length(v.network_interface[0].access_config) > 0 ? v.network_interface[0].access_config[0].nat_ip : null
+    }
+  }
+}
+
+# NSI deployment instructions
+output "nsi_deployment_instructions" {
+  description = "Instructions and commands for completing NSI setup"
+  value = <<-EOT
+    
+    After Terraform deployment is complete, run the following gcloud commands to enable NSI:
+    
+    1. Create the intercept deployment group:
+    gcloud beta network-security intercept-deployment-groups create newfgt-nsi-ftnt-dg \
+      --location global \
+      --project ${var.project_id} \
+      --network ${google_compute_network.vpc_networks["inspection"].name} \
+      --no-async
+    
+    2. Create intercept deployments for each zone:
+    gcloud beta network-security intercept-deployments create fgt-nsi-us-central1a \
+      --location=us-central1-a \
+      --project=${var.project_id} \
+      --forwarding-rule=${google_compute_forwarding_rule.fortigate_forwarding_rules["us-central1-a"].name} \
+      --intercept-deployment-group=projects/${var.project_id}/locations/global/interceptDeploymentGroups/newfgt-nsi-ftnt-dg \
+      --forwarding-rule-location=${var.region} \
+      --no-async
+    
+    gcloud beta network-security intercept-deployments create fgt-nsi-us-central1b \
+      --location=us-central1-b \
+      --project=${var.project_id} \
+      --forwarding-rule=${google_compute_forwarding_rule.fortigate_forwarding_rules["us-central1-b"].name} \
+      --intercept-deployment-group=projects/${var.project_id}/locations/global/interceptDeploymentGroups/newfgt-nsi-ftnt-dg \
+      --forwarding-rule-location=${var.region} \
+      --no-async
+    
+    gcloud beta network-security intercept-deployments create fgt-nsi-us-central1c1 \
+      --location=us-central1-c \
+      --project=${var.project_id} \
+      --forwarding-rule=${google_compute_forwarding_rule.fortigate_forwarding_rules["us-central1-c"].name} \
+      --intercept-deployment-group=projects/${var.project_id}/locations/global/interceptDeploymentGroups/newfgt-nsi-ftnt-dg \
+      --forwarding-rule-location=${var.region} \
+      --no-async
+    
+    3. Create intercept endpoint group:
+    gcloud beta network-security intercept-endpoint-groups create newfgt-nsi-ftnt-epg \
+      --intercept-deployment-group newfgt-nsi-ftnt-dg \
+      --project ${var.project_id} \
+      --location global \
+      --no-async
+    
+    4. Associate endpoint group with web VPC:
+    gcloud beta network-security intercept-endpoint-group-associations create new-fgt-nsi-ftnt-epg-assoc \
+      --intercept-endpoint-group newfgt-nsi-ftnt-epg \
+      --network ${google_compute_network.vpc_networks["web"].name} \
+      --project ${var.project_id} \
+      --location global \
+      --no-async
+    
+    5. Create security profile:
+    gcloud beta network-security security-profiles custom-intercept create newfgt-nsi-ftnt-sp1 \
+      --intercept-endpoint-group newfgt-nsi-ftnt-epg \
+      --billing-project ${var.project_id} \
+      --organization ${var.organization_id} \
+      --location global
+    
+    6. Create security profile group:
+    gcloud beta network-security security-profile-groups create newfgt-nsi-ftnt-spg1 \
+      --custom-intercept-profile newfgt-nsi-ftnt-sp1 \
+      --billing-project ${var.project_id} \
+      --organization ${var.organization_id} \
+      --location global
+    
+    7. Create firewall policy:
+    gcloud compute network-firewall-policies create newfgt-nsi \
+      --project ${var.project_id} \
+      --global
+    
+    8. Create firewall policy rules:
+    gcloud beta compute network-firewall-policies rules create 10 \
+      --action=APPLY_SECURITY_PROFILE_GROUP \
+      --firewall-policy newfgt-nsi \
+      --global-firewall-policy \
+      --security-profile-group organizations/${var.organization_id}/locations/global/securityProfileGroups/newfgt-nsi-ftnt-spg1 \
+      --layer4-configs all \
+      --src-ip-ranges 0.0.0.0/0 \
+      --dest-ip-ranges 0.0.0.0/0 \
+      --direction INGRESS
+    
+    gcloud beta compute network-firewall-policies rules create 11 \
+      --action=APPLY_SECURITY_PROFILE_GROUP \
+      --firewall-policy newfgt-nsi \
+      --global-firewall-policy \
+      --security-profile-group organizations/${var.organization_id}/locations/global/securityProfileGroups/newfgt-nsi-ftnt-spg1 \
+      --layer4-configs all \
+      --src-ip-ranges 0.0.0.0/0 \
+      --dest-ip-ranges 0.0.0.0/0 \
+      --direction EGRESS
+    
+    9. Associate policy with web VPC:
+    gcloud compute network-firewall-policies associations create \
+      --name newfgt-nsi-policy-assoc \
+      --global-firewall-policy \
+      --firewall-policy newfgt-nsi \
+      --network ${google_compute_network.vpc_networks["web"].name} \
+      --project ${var.project_id}
+    
+    EOT
 }

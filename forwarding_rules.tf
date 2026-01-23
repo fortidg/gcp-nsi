@@ -1,16 +1,16 @@
 # Forwarding Rules for Internal Load Balancer
 resource "google_compute_forwarding_rule" "fortigate_forwarding_rules" {
   for_each = {
-    "us-west1a" = {
-      name   = "${local.prefix}-fgt-us-west1a"
+    "us-central1-a" = {
+      name   = "fgt-us-central1a"
       zone   = "${var.region}-a"
     }
-    "us-west1b" = {
-      name   = "${local.prefix}-fgt-us-west1b"
+    "us-central1-b" = {
+      name   = "fgt-us-central1b"
       zone   = "${var.region}-b"
     }
-    "us-west1c" = {
-      name   = "${local.prefix}-fgt-us-west1c1"
+    "us-central1-c" = {
+      name   = "fgt-us-central1c1"
       zone   = "${var.region}-c"
     }
   }

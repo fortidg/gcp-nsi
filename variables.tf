@@ -4,6 +4,11 @@ variable "project_id" {
   type        = string
 }
 
+variable "organization_id" {
+  description = "The GCP organization ID (required for NSI security profiles)"
+  type        = string
+}
+
 variable "region" {
   description = "The GCP region for resources"
   type        = string
@@ -26,13 +31,13 @@ variable "fortigate_machine_type" {
 variable "fortigate_instance_count" {
   description = "Number of FortiGate instances in the MIG"
   type        = number
-  default     = 2
+  default     = 3
 }
 
 variable "zones" {
   description = "List of zones for distributing FortiGate instances"
   type        = list(string)
-  default     = ["us-central1-a", "us-central1-b"]
+  default     = ["us-central1-a", "us-central1-b", "us-central1-c"]
 }
 
 # FortiGate Admin Configuration

@@ -2,7 +2,7 @@
 
 **Experimental**
  
-This Terraform configuration deploys a FortiGate Network Service Insertion (NSI) infrastructure on Google Cloud Platform, based on the gcloud configurations provided. The deployment creates the necessary VPC networks, subnets, FortiGate instances in a Managed Instance Group, and load balancer components required for traffic inspection.
+This Terraform configuration deploys a FortiGate Network Service Insertion (NSI) infrastructure on Google Cloud Platform, based on the gcloud configurations provided. The deployment creates the necessary VPC networks, subnets, FortiGate instances in a Managed Instance Group, load balancer components, and NSI-specific resources required for traffic inspection.
 
 
 ![architecture](architecture-diagram.mmd)
@@ -23,8 +23,21 @@ This deployment creates:
 - **Load Balancer**: Internal UDP load balancer for Geneve traffic (port 6081)
 - **Forwarding Rules**: Three zone-specific forwarding rules for NSI deployment
 
+### NSI (Network Security Inspection) Components
+- **Intercept Deployment Group**: Global deployment group for FortiGate NSI
+- **Intercept Deployments**: Zone-specific intercept deployments linking forwarding rules
+- **Intercept Endpoint Group**: Endpoint group for traffic interception
+- **Intercept Endpoint Group Association**: Association with the web VPC for traffic inspection
+- **Security Profiles**: Custom intercept security profile for traffic processing
+- **Security Profile Group**: Group containing the custom intercept profile
+- **Firewall Policy**: Network firewall policy with NSI rules for ingress/egress traffic
+- **Firewall Policy Association**: Policy association with the web VPC
+
+### Test Infrastructure  
+- **Web Server VMs**: Windows Server 2025 instances across three zones for testing NSI functionality
+
 ### Security
-- **Firewall Rules**: Allow all ingress/egress traffic on all VPCs (customize for production)
+- **Firewall Rules**: Allow all ingress/egress traffic on all VPCs plus health check rules
 - **Network Interfaces**: Dual-interface setup (inspection + management)
 - **Service Account**: Cloud Platform scope for GCP API access
 
@@ -52,9 +65,10 @@ cp terraform.tfvars.example terraform.tfvars
 
 Edit `terraform.tfvars` with your specific values:
 ```hcl
-project_id = "your-gcp-project-id"
-region     = "us-west1"
-prefix     = "fgt-nsi"
+project_id      = "your-gcp-project-id"
+organization_id = "your-gcp-organization-id"
+region          = "us-central1"
+prefix          = "fgt-nsi"
 admin_password = "YourSecurePasswordHere!"
 ```
 
