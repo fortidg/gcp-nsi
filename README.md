@@ -89,7 +89,7 @@ After deployment, FortiGate instances will have public IP addresses for manageme
 
 ### Required Variables
 - `project_id`: Your GCP project ID
-- `region`: GCP region for deployment (default: us-west1)
+- `region`: GCP region for deployment (default: us-central1)
 - `admin_password`: FortiGate admin password
 
 ### Optional Variables
@@ -110,9 +110,9 @@ After Terraform deployment, complete the NSI setup in GCP Console:
 
 1. **Create NSI Deployment Group** in Network Security → Network Service Insertion
 2. **Reference Forwarding Rules** created by this Terraform:
-   - `fgt-us-west1a` (Zone us-west1-a)
-   - `fgt-us-west1b` (Zone us-west1-b) 
-   - `fgt-us-west1c1` (Zone us-west1-c)
+   - `fgt-us-central1a` (Zone us-central1-a)
+   - `fgt-us-central1b` (Zone us-central1-b) 
+   - `fgt-us-central1c1` (Zone us-central1-c)
 3. **Configure Policy Rules** to route traffic through the NSI
 
 ## File Structure

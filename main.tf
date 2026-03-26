@@ -67,32 +67,32 @@ locals {
   # Subnet configurations
   subnets = {
     # Inspection subnet
-    inspection_west = {
-      name                     = "${local.prefix}-fgt-nsi-west"
+    inspection_central = {
+      name                     = "${local.prefix}-fgt-nsi-central"
       vpc_key                  = "inspection"
       cidr_range              = "10.50.160.0/24"
       region                  = var.region
-      description             = "Data or Traffic inspection Subnet in us-west1"
+      description             = "Data or Traffic inspection Subnet in us-central1"
       enable_private_ip_google_access = true
     }
 
     # Management subnet
-    management_west = {
-      name                     = "${local.prefix}-fgt-nsi1-mgmt-west"
+    management_central = {
+      name                     = "${local.prefix}-fgt-nsi1-mgmt-central"
       vpc_key                  = "management"
       cidr_range              = "10.50.180.0/24"
       region                  = var.region
-      description             = "FortiGate management Subnet in us-west1"
+      description             = "FortiGate management Subnet in us-central1"
       enable_private_ip_google_access = true
     }
 
     # Web subnet
-    web_west = {
-      name                     = "${local.prefix}-fgt-nsi-web1-west"
+    web_central = {
+      name                     = "${local.prefix}-fgt-nsi-web1-central"
       vpc_key                  = "web"
       cidr_range              = "10.12.0.0/24"
       region                  = var.region
-      description             = "Public Web Subnet in us-west1"
+      description             = "Public Web Subnet in us-central1"
       enable_private_ip_google_access = true
     }
   }

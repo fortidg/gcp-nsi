@@ -21,19 +21,19 @@ output "subnets" {
   description = "Created subnets"
   value = {
     inspection_subnet = {
-      id         = google_compute_subnetwork.subnets["inspection_west"].id
-      name       = google_compute_subnetwork.subnets["inspection_west"].name
-      cidr_range = google_compute_subnetwork.subnets["inspection_west"].ip_cidr_range
+      id         = google_compute_subnetwork.subnets["inspection_central"].id
+      name       = google_compute_subnetwork.subnets["inspection_central"].name
+      cidr_range = google_compute_subnetwork.subnets["inspection_central"].ip_cidr_range
     }
     management_subnet = {
-      id         = google_compute_subnetwork.subnets["management_west"].id
-      name       = google_compute_subnetwork.subnets["management_west"].name
-      cidr_range = google_compute_subnetwork.subnets["management_west"].ip_cidr_range
+      id         = google_compute_subnetwork.subnets["management_central"].id
+      name       = google_compute_subnetwork.subnets["management_central"].name
+      cidr_range = google_compute_subnetwork.subnets["management_central"].ip_cidr_range
     }
     web_subnet = {
-      id         = google_compute_subnetwork.subnets["web_west"].id
-      name       = google_compute_subnetwork.subnets["web_west"].name
-      cidr_range = google_compute_subnetwork.subnets["web_west"].ip_cidr_range
+      id         = google_compute_subnetwork.subnets["web_central"].id
+      name       = google_compute_subnetwork.subnets["web_central"].name
+      cidr_range = google_compute_subnetwork.subnets["web_central"].ip_cidr_range
     }
   }
 }
