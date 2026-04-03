@@ -45,21 +45,21 @@ locals {
     # Data/Traffic inspection VPC
     inspection = {
       name                    = "${local.prefix}-fgt-nsi-ib-new"
-      description            = "NIS data or traffic VPC network with regional subnets"
+      description             = "NIS data or traffic VPC network with regional subnets"
       auto_create_subnetworks = false
     }
 
     # Management VPC  
     management = {
       name                    = "${local.prefix}-fgt-nsi-ib-new-mgmt"
-      description            = "FortiGate management VPC network with regional subnets"
+      description             = "FortiGate management VPC network with regional subnets"
       auto_create_subnetworks = false
     }
 
     # Web VPC
     web = {
       name                    = "${local.prefix}-fgt-nsi-ib-new-web"
-      description            = "Public Web VPC network with regional subnets"
+      description             = "Public Web VPC network with regional subnets"
       auto_create_subnetworks = false
     }
   }
@@ -68,31 +68,31 @@ locals {
   subnets = {
     # Inspection subnet
     inspection_central = {
-      name                     = "${local.prefix}-fgt-nsi-central"
-      vpc_key                  = "inspection"
-      cidr_range              = "10.50.160.0/24"
-      region                  = var.region
-      description             = "Data or Traffic inspection Subnet in us-central1"
+      name                            = "${local.prefix}-fgt-nsi-central"
+      vpc_key                         = "inspection"
+      cidr_range                      = "10.50.160.0/24"
+      region                          = var.region
+      description                     = "Data or Traffic inspection Subnet in us-central1"
       enable_private_ip_google_access = true
     }
 
     # Management subnet
     management_central = {
-      name                     = "${local.prefix}-fgt-nsi1-mgmt-central"
-      vpc_key                  = "management"
-      cidr_range              = "10.50.180.0/24"
-      region                  = var.region
-      description             = "FortiGate management Subnet in us-central1"
+      name                            = "${local.prefix}-fgt-nsi1-mgmt-central"
+      vpc_key                         = "management"
+      cidr_range                      = "10.50.180.0/24"
+      region                          = var.region
+      description                     = "FortiGate management Subnet in us-central1"
       enable_private_ip_google_access = true
     }
 
     # Web subnet
     web_central = {
-      name                     = "${local.prefix}-fgt-nsi-web1-central"
-      vpc_key                  = "web"
-      cidr_range              = "10.12.0.0/24"
-      region                  = var.region
-      description             = "Public Web Subnet in us-central1"
+      name                            = "${local.prefix}-fgt-nsi-web1-central"
+      vpc_key                         = "web"
+      cidr_range                      = "10.12.0.0/24"
+      region                          = var.region
+      description                     = "Public Web Subnet in us-central1"
       enable_private_ip_google_access = true
     }
   }

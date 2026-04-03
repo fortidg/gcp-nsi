@@ -50,8 +50,8 @@ output "fortigate_instance_template" {
 output "fortigate_instance_group" {
   description = "FortiGate managed instance group details"
   value = {
-    id            = google_compute_region_instance_group_manager.fortigate_mig.id
-    name          = google_compute_region_instance_group_manager.fortigate_mig.name
+    id             = google_compute_region_instance_group_manager.fortigate_mig.id
+    name           = google_compute_region_instance_group_manager.fortigate_mig.name
     instance_group = google_compute_region_instance_group_manager.fortigate_mig.instance_group
   }
 }
@@ -99,11 +99,11 @@ output "project_summary" {
   description = "Summary of the deployed resources"
   value = {
     project_id             = var.project_id
-    region                = var.region
+    region                 = var.region
     fortigate_machine_type = var.fortigate_machine_type
-    instance_count        = var.fortigate_instance_count
-    zones                 = var.zones
-    admin_port           = var.admin_port
+    instance_count         = var.fortigate_instance_count
+    zones                  = var.zones
+    admin_port             = var.admin_port
   }
 }
 
@@ -112,10 +112,10 @@ output "web_servers" {
   description = "Web server instances for testing"
   value = {
     for k, v in google_compute_instance.web_servers : k => {
-      id           = v.id
-      name         = v.name
-      internal_ip  = v.network_interface[0].network_ip
-      external_ip  = length(v.network_interface[0].access_config) > 0 ? v.network_interface[0].access_config[0].nat_ip : null
+      id          = v.id
+      name        = v.name
+      internal_ip = v.network_interface[0].network_ip
+      external_ip = length(v.network_interface[0].access_config) > 0 ? v.network_interface[0].access_config[0].nat_ip : null
     }
   }
 }
@@ -123,7 +123,7 @@ output "web_servers" {
 # NSI deployment instructions
 output "nsi_deployment_instructions" {
   description = "Instructions and commands for completing NSI setup"
-  value = <<-EOT
+  value       = <<-EOT
     
     After Terraform deployment is complete, run the following gcloud commands to enable NSI:
     

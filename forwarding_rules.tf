@@ -2,16 +2,16 @@
 resource "google_compute_forwarding_rule" "fortigate_forwarding_rules" {
   for_each = {
     "us-central1-a" = {
-      name   = "fgt-us-central1a"
-      zone   = "${var.region}-a"
+      name = "fgt-us-central1a"
+      zone = "${var.region}-a"
     }
     "us-central1-b" = {
-      name   = "fgt-us-central1b"
-      zone   = "${var.region}-b"
+      name = "fgt-us-central1b"
+      zone = "${var.region}-b"
     }
     "us-central1-c" = {
-      name   = "fgt-us-central1c1"
-      zone   = "${var.region}-c"
+      name = "fgt-us-central1c1"
+      zone = "${var.region}-c"
     }
   }
 
@@ -21,10 +21,10 @@ resource "google_compute_forwarding_rule" "fortigate_forwarding_rules" {
   ip_protocol           = "UDP"
   ports                 = ["6081"]
   network_tier          = "PREMIUM"
-  
+
   # Reference the backend service
   backend_service = google_compute_region_backend_service.fortigate_backend_service.id
-  
+
   # Use the inspection subnet
   subnetwork = google_compute_subnetwork.subnets["inspection_central"].id
 

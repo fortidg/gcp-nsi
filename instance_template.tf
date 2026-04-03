@@ -20,18 +20,18 @@ resource "google_compute_instance_template" "fortigate_template" {
   # Network interfaces
   # Port 1 - Data/Inspection interface 
   network_interface {
-    network            = google_compute_network.vpc_networks["inspection"].id
-    subnetwork         = google_compute_subnetwork.subnets["inspection_central"].id
+    network    = google_compute_network.vpc_networks["inspection"].id
+    subnetwork = google_compute_subnetwork.subnets["inspection_central"].id
     # network_tier       = "PREMIUM"
-    stack_type         = "IPV4_ONLY"
+    stack_type = "IPV4_ONLY"
   }
 
   # Port 2 - Management interface
   network_interface {
-    network            = google_compute_network.vpc_networks["management"].id
-    subnetwork         = google_compute_subnetwork.subnets["management_central"].id
+    network    = google_compute_network.vpc_networks["management"].id
+    subnetwork = google_compute_subnetwork.subnets["management_central"].id
     # network_tier       = "PREMIUM"
-    stack_type         = "IPV4_ONLY"
+    stack_type = "IPV4_ONLY"
     # Enable external IP for management access
     access_config {
       network_tier = "PREMIUM"
@@ -46,11 +46,13 @@ resource "google_compute_instance_template" "fortigate_template" {
   # Instance metadata
   metadata = {
     enable-oslogin = "TRUE"
-    user-data     = templatefile("${path.module}/templates/fortigate-config.tpl", {
-      admin_port    = var.admin_port
-      admin_pass    = var.admin_password
-      mgmt_gw       = google_compute_subnetwork.subnets["management_central"].gateway_address
-      insp_gw = google_compute_subnetwork.subnets["inspection_central"].gateway_address
+    user-data = templatefile("${path.module}/templates/fortigate-config.tpl", {
+      admin_port = var.admin_port
+      admin_pass = var.admin_password
+      fmg_ip     = var.fmg_ip
+      fmg = var.fmg
+      mgmt_gw    = google_compute_subnetwork.subnets["management_central"].gateway_address
+      insp_gw    = google_compute_subnetwork.subnets["inspection_central"].gateway_address
     })
   }
 

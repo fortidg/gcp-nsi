@@ -54,6 +54,18 @@ variable "admin_password" {
   default     = "Fortinet123!"
 }
 
+variable "fmg" {
+  type = string
+  description = "Will FortiManager be used for this deployment? (true/false)"
+  default = "false"
+}
+
+variable "fmg_ip" {
+  description = "IP address of the FortiManager (if applicable)"
+  type        = string
+  default     = ""
+}
+
 # Network Configuration Variables
 variable "inspection_subnet_cidr" {
   description = "CIDR range for inspection subnet"

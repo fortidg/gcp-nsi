@@ -226,4 +226,53 @@ config firewall policy
     next
 end
 
---==FGTCONF==--
+config system fortiguard
+    set interface-select-method specify
+    set interface port2
+    set vrf-select 5
+end
+config system dns
+    set interface-select-method specify
+    set interface port2
+    set vrf-select 5
+end
+
+%{ if fmg == "true" }
+--==FGTCONF==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="license"
+
+config system central-management
+    set type fortimanager
+    set fmg ${fmg_ip}
+    set interface-select-method specify
+    set interface port2
+    set vrf-select 5
+end
+
+execute vm-license
+
+%{ endif }
+
+--==FGTCONF==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="startup_delay.sh"
+
+#!/bin/bash
+# Wait for network infrastructure to be fully ready
+sleep 30
+# Test connectivity before proceeding
+for i in {1..10}; do
+    if ping -c 1 8.8.8.8 > /dev/null 2>&1; then
+        break
+    fi
+    sleep 10
+done
+
+execute vm-license
+
+--==FGTCONF==

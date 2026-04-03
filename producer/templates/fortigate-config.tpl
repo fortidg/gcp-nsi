@@ -237,4 +237,18 @@ config system dns
     set vrf-select 5
 end
 
+%{ if fmg == "true" }
+--==FGTCONF==--
+config system central-management
+    set type fortimanager
+    set fmg ${fmg_ip}
+    set interface-select-method specify
+    set interface port2
+    set vrf-select 5
+end
+
+execute vm-license
+
+%{ endif }
+
 --==FGTCONF==--

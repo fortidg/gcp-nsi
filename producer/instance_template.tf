@@ -51,6 +51,8 @@ resource "google_compute_instance_template" "fortigate_template" {
       admin_pass    = var.admin_password
       mgmt_gw       = google_compute_subnetwork.subnets["management_central"].gateway_address
       insp_gw = google_compute_subnetwork.subnets["inspection_central"].gateway_address
+      fmg_ip = var.fmg_ip
+      fmg = var.fmg
     })
   }
 
