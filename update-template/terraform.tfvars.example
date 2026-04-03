@@ -1,0 +1,10 @@
+# project_id, region, admin_port, machine_type, and mig_name are read automatically
+# from ../terraform.tfstate — no need to set them here.
+
+# Required
+admin_password = "YourSecurePassword!"
+
+# Optional overrides
+# fortigate_machine_type = "c4-standard-4"   # override machine type from root state
+# fmg                    = "false"
+# fmg_ip                 = ""

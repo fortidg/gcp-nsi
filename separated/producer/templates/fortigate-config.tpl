@@ -247,8 +247,6 @@ config system central-management
     set vrf-select 5
 end
 
-execute vm-license
-
 %{ endif }
 
 --==FGTCONF==--

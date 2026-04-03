@@ -65,11 +65,6 @@ config system httpd
     set admin-server-cert Fortinet_Factory
 end
 
-config system probe-response
-    set port 8080
-    set http-probe-value OK
-    set mode http-probe
-end
 
 config router static
     edit 1
@@ -130,7 +125,7 @@ config firewall policy
         set dstaddr all
         set schedule always
         set service ALL
-        set comments NSI traffic inspection
+        set comments "NSI traffic inspection"
         set inspection-mode flow
         set utm-status enable
     next
@@ -138,7 +133,7 @@ end
 
 config webfilter profile
     edit doc-example-webfilter-profile
-        set comment Default web filtering.
+        set comment "Default web filtering."
         config ftgd-wf
             unset options
             config filters
@@ -170,7 +165,7 @@ end
 
 config firewall ssl-ssh-profile
     edit custom-cert
-        set comment Read-only SSL handshake inspection profile.
+        set comment "Read-only SSL handshake inspection profile."
         config https
             set ports 443
             set status certificate-inspection
@@ -236,22 +231,5 @@ config system dns
     set interface port2
     set vrf-select 5
 end
-
-%{ if fmg == "true" }
---==FGTCONF==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment; filename="license"
-
-config system central-management
-    set type fortimanager
-    set fmg ${fmg_ip}
-    set interface-select-method specify
-    set interface port2
-    set vrf-select 5
-end
-
-%{ endif }
 
 --==FGTCONF==
