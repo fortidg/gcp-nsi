@@ -46,16 +46,18 @@ check_variables() {
 # Get Terraform outputs
 get_terraform_outputs() {
     print_status "Getting Terraform outputs..."
-    
+
     INSPECTION_NETWORK=$(terraform output -json vpc_networks | jq -r '.inspection_vpc.name')
     WEB_NETWORK=$(terraform output -json vpc_networks | jq -r '.web_vpc.name')
-    
+    WEB2_NETWORK=$(terraform output -json vpc_networks | jq -r '.web2_vpc.name')
+
     FORWARDING_RULE_A=$(terraform output -json forwarding_rules | jq -r '."us-central1-a".name')
     FORWARDING_RULE_B=$(terraform output -json forwarding_rules | jq -r '."us-central1-b".name')
     FORWARDING_RULE_C=$(terraform output -json forwarding_rules | jq -r '."us-central1-c".name')
-    
+
     print_status "Inspection Network: $INSPECTION_NETWORK"
     print_status "Web Network: $WEB_NETWORK"
+    print_status "Web2 Network: $WEB2_NETWORK"
     print_status "Forwarding Rules: $FORWARDING_RULE_A, $FORWARDING_RULE_B, $FORWARDING_RULE_C"
 }
 
@@ -111,14 +113,26 @@ create_nsi_resources() {
         print_warning "Intercept endpoint group may already exist, continuing..."
     }
     
-    print_step "4. Associating endpoint group with web VPC..."
+    print_step "4. Associating endpoint group with web VPCs..."
+
+    # Associate with first Web VPC
     gcloud beta network-security intercept-endpoint-group-associations create new-fgt-nsi-ftnt-epg-assoc \
         --intercept-endpoint-group newfgt-nsi-ftnt-epg \
         --network "$WEB_NETWORK" \
         --project "$PROJECT_ID" \
         --location global \
         --no-async || {
-        print_warning "Intercept endpoint group association may already exist, continuing..."
+        print_warning "Intercept endpoint group association for Web VPC may already exist, continuing..."
+    }
+
+    # Associate with second Web VPC
+    gcloud beta network-security intercept-endpoint-group-associations create new-fgt-nsi-ftnt-epg-assoc-web2 \
+        --intercept-endpoint-group newfgt-nsi-ftnt-epg \
+        --network "$WEB2_NETWORK" \
+        --project "$PROJECT_ID" \
+        --location global \
+        --no-async || {
+        print_warning "Intercept endpoint group association for Web2 VPC may already exist, continuing..."
     }
     
     print_step "5. Creating security profile..."
@@ -171,14 +185,26 @@ create_nsi_resources() {
         print_warning "Firewall policy rule 11 may already exist, continuing..."
     }
     
-    print_step "9. Associating policy with web VPC..."
+    print_step "9. Associating policy with web VPCs..."
+
+    # Associate with first Web VPC
     gcloud compute network-firewall-policies associations create \
         --name newfgt-nsi-policy-assoc \
         --global-firewall-policy \
         --firewall-policy newfgt-nsi \
         --network "$WEB_NETWORK" \
         --project "$PROJECT_ID" || {
-        print_warning "Firewall policy association may already exist, continuing..."
+        print_warning "Firewall policy association for Web VPC may already exist, continuing..."
+    }
+
+    # Associate with second Web VPC
+    gcloud compute network-firewall-policies associations create \
+        --name newfgt-nsi-policy-assoc-web2 \
+        --global-firewall-policy \
+        --firewall-policy newfgt-nsi \
+        --network "$WEB2_NETWORK" \
+        --project "$PROJECT_ID" || {
+        print_warning "Firewall policy association for Web2 VPC may already exist, continuing..."
     }
 }
 

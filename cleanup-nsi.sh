@@ -67,7 +67,18 @@ delete_or_skip() {
 cleanup_nsi_resources() {
     CLEANUP_ERRORS=0
 
-    print_step "1. Removing firewall policy association..."
+    print_step "1. Removing firewall policy associations..."
+
+    # Remove association from Web2 VPC
+    delete_or_skip "firewall policy association newfgt-nsi-policy-assoc-web2" \
+        gcloud compute network-firewall-policies associations delete \
+            --name newfgt-nsi-policy-assoc-web2 \
+            --global-firewall-policy \
+            --firewall-policy newfgt-nsi \
+            --project "$PROJECT_ID" \
+            --quiet
+
+    # Remove association from Web VPC
     delete_or_skip "firewall policy association newfgt-nsi-policy-assoc" \
         gcloud compute network-firewall-policies associations delete \
             --name newfgt-nsi-policy-assoc \
@@ -114,7 +125,16 @@ cleanup_nsi_resources() {
             --location global \
             --quiet
 
-    print_step "6. Deleting intercept endpoint group association..."
+    print_step "6. Deleting intercept endpoint group associations..."
+
+    # Delete Web2 VPC association
+    delete_or_skip "intercept endpoint group association new-fgt-nsi-ftnt-epg-assoc-web2" \
+        gcloud beta network-security intercept-endpoint-group-associations delete new-fgt-nsi-ftnt-epg-assoc-web2 \
+            --project "$PROJECT_ID" \
+            --location global \
+            --quiet
+
+    # Delete Web VPC association
     delete_or_skip "intercept endpoint group association new-fgt-nsi-ftnt-epg-assoc" \
         gcloud beta network-security intercept-endpoint-group-associations delete new-fgt-nsi-ftnt-epg-assoc \
             --project "$PROJECT_ID" \

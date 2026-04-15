@@ -62,6 +62,13 @@ locals {
       description             = "Public Web VPC network with regional subnets"
       auto_create_subnetworks = false
     }
+
+    # Second Web VPC for NSI demonstration
+    web2 = {
+      name                    = "${local.prefix}-fgt-nsi-ib-new-web2"
+      description             = "Second Web VPC network for NSI traffic inspection demo"
+      auto_create_subnetworks = false
+    }
   }
 
   # Subnet configurations
@@ -93,6 +100,16 @@ locals {
       cidr_range                      = "10.12.0.0/24"
       region                          = var.region
       description                     = "Public Web Subnet in us-central1"
+      enable_private_ip_google_access = true
+    }
+
+    # Second Web subnet
+    web2_central = {
+      name                            = "${local.prefix}-fgt-nsi-web2-central"
+      vpc_key                         = "web2"
+      cidr_range                      = "10.13.0.0/24"
+      region                          = var.region
+      description                     = "Second Web Subnet in us-central1"
       enable_private_ip_google_access = true
     }
   }
@@ -223,6 +240,52 @@ locals {
         }
       ]
       description = "Allow Google Cloud health checks on management network"
+    }
+
+    # Web2 VPC - allow all ingress for demonstration
+    web2_allow_ingress = {
+      name          = "${local.prefix}-fgt-nsi-web2-allow-all-in"
+      network       = "web2"
+      direction     = "INGRESS"
+      priority      = 1000
+      source_ranges = ["0.0.0.0/0"]
+      allow = [
+        {
+          protocol = "tcp"
+          ports    = ["0-65535"]
+        },
+        {
+          protocol = "udp"
+          ports    = ["0-65535"]
+        },
+        {
+          protocol = "icmp"
+        }
+      ]
+      description = "Allow all incoming traffic for Web2 VPC"
+    }
+
+    # Web2 VPC - allow all egress
+    web2_allow_egress = {
+      name               = "${local.prefix}-fgt-nsi-web2-allow-all-egr"
+      network            = "web2"
+      direction          = "EGRESS"
+      priority           = 1000
+      destination_ranges = ["0.0.0.0/0"]
+      allow = [
+        {
+          protocol = "tcp"
+          ports    = ["0-65535"]
+        },
+        {
+          protocol = "udp"
+          ports    = ["0-65535"]
+        },
+        {
+          protocol = "icmp"
+        }
+      ]
+      description = "Allow all outgoing traffic for Web2 VPC"
     }
   }
 }

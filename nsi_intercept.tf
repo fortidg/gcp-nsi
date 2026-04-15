@@ -52,7 +52,9 @@ output "nsi_manual_commands" {
 
     endpoint_group = "gcloud beta network-security intercept-endpoint-groups create newfgt-nsi-ftnt-epg --intercept-deployment-group newfgt-nsi-ftnt-dg --project ${var.project_id} --location global --no-async"
 
-    endpoint_group_association = "gcloud beta network-security intercept-endpoint-group-associations create new-fgt-nsi-ftnt-epg-assoc --intercept-endpoint-group newfgt-nsi-ftnt-epg --network ${google_compute_network.vpc_networks["web"].name} --project ${var.project_id} --location global --no-async"
+    endpoint_group_association_web = "gcloud beta network-security intercept-endpoint-group-associations create new-fgt-nsi-ftnt-epg-assoc --intercept-endpoint-group newfgt-nsi-ftnt-epg --network ${google_compute_network.vpc_networks["web"].name} --project ${var.project_id} --location global --no-async"
+
+    endpoint_group_association_web2 = "gcloud beta network-security intercept-endpoint-group-associations create new-fgt-nsi-ftnt-epg-assoc-web2 --intercept-endpoint-group newfgt-nsi-ftnt-epg --network ${google_compute_network.vpc_networks["web2"].name} --project ${var.project_id} --location global --no-async"
 
     security_profile = "gcloud beta network-security security-profiles custom-intercept create newfgt-nsi-ftnt-sp1 --intercept-endpoint-group newfgt-nsi-ftnt-epg --billing-project ${var.project_id} --organization ${var.organization_id} --location global"
 
@@ -65,6 +67,35 @@ output "nsi_manual_commands" {
       egress  = "gcloud beta compute network-firewall-policies rules create 11 --action=APPLY_SECURITY_PROFILE_GROUP --firewall-policy newfgt-nsi --global-firewall-policy --security-profile-group organizations/${var.organization_id}/locations/global/securityProfileGroups/newfgt-nsi-ftnt-spg1 --layer4-configs all --src-ip-ranges 0.0.0.0/0 --dest-ip-ranges 0.0.0.0/0 --direction EGRESS"
     }
 
-    firewall_policy_association = "gcloud compute network-firewall-policies associations create --name newfgt-nsi-policy-assoc --global-firewall-policy --firewall-policy newfgt-nsi --network ${google_compute_network.vpc_networks["web"].name} --project ${var.project_id}"
+    firewall_policy_association_web = "gcloud compute network-firewall-policies associations create --name newfgt-nsi-policy-assoc --global-firewall-policy --firewall-policy newfgt-nsi --network ${google_compute_network.vpc_networks["web"].name} --project ${var.project_id}"
+
+    firewall_policy_association_web2 = "gcloud compute network-firewall-policies associations create --name newfgt-nsi-policy-assoc-web2 --global-firewall-policy --firewall-policy newfgt-nsi --network ${google_compute_network.vpc_networks["web2"].name} --project ${var.project_id}"
+  }
+}
+
+# Additional output for VPC Peering verification
+output "vpc_peering_info" {
+  description = "VPC Peering configuration for NSI demonstration"
+  value = {
+    web_to_web2_peering  = google_compute_network_peering.web_to_web2.name
+    web2_to_web_peering  = google_compute_network_peering.web2_to_web.name
+    web_network          = google_compute_network.vpc_networks["web"].name
+    web2_network         = google_compute_network.vpc_networks["web2"].name
+    web_subnet_cidr      = google_compute_subnetwork.subnets["web_central"].ip_cidr_range
+    web2_subnet_cidr     = google_compute_subnetwork.subnets["web2_central"].ip_cidr_range
+    peering_status_info  = "Use 'gcloud compute networks peerings list --network=${google_compute_network.vpc_networks["web"].name}' to verify peering status"
+  }
+}
+
+# Output for Web2 server information
+output "web2_servers_info" {
+  description = "Information about Web2 VPC servers for testing"
+  value = {
+    web2_server_names = [for k, v in google_compute_instance.web2_servers : v.name]
+    web2_server_ips   = [for k, v in google_compute_instance.web2_servers : v.network_interface[0].network_ip]
+    web2_subnet       = google_compute_subnetwork.subnets["web2_central"].name
+    web2_vpc          = google_compute_network.vpc_networks["web2"].name
+    test_command      = "From Web VPC servers, ping Web2 VPC servers to test NSI inspection"
+  }
   }
 }

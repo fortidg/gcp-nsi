@@ -14,6 +14,10 @@ output "vpc_networks" {
       id   = google_compute_network.vpc_networks["web"].id
       name = google_compute_network.vpc_networks["web"].name
     }
+    web2_vpc = {
+      id   = google_compute_network.vpc_networks["web2"].id
+      name = google_compute_network.vpc_networks["web2"].name
+    }
   }
 }
 
@@ -34,6 +38,11 @@ output "subnets" {
       id         = google_compute_subnetwork.subnets["web_central"].id
       name       = google_compute_subnetwork.subnets["web_central"].name
       cidr_range = google_compute_subnetwork.subnets["web_central"].ip_cidr_range
+    }
+    web2_subnet = {
+      id         = google_compute_subnetwork.subnets["web2_central"].id
+      name       = google_compute_subnetwork.subnets["web2_central"].name
+      cidr_range = google_compute_subnetwork.subnets["web2_central"].ip_cidr_range
     }
   }
 }
@@ -112,6 +121,19 @@ output "web_servers" {
   description = "Web server instances for testing"
   value = {
     for k, v in google_compute_instance.web_servers : k => {
+      id          = v.id
+      name        = v.name
+      internal_ip = v.network_interface[0].network_ip
+      external_ip = length(v.network_interface[0].access_config) > 0 ? v.network_interface[0].access_config[0].nat_ip : null
+    }
+  }
+}
+
+# Web2 servers output
+output "web2_servers" {
+  description = "Web2 server instances for testing VPC peering and NSI"
+  value = {
+    for k, v in google_compute_instance.web2_servers : k => {
       id          = v.id
       name        = v.name
       internal_ip = v.network_interface[0].network_ip

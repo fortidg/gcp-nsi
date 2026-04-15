@@ -85,6 +85,12 @@ variable "web_subnet_cidr" {
   default     = "10.12.0.0/24"
 }
 
+variable "web2_subnet_cidr" {
+  description = "CIDR range for second web subnet"
+  type        = string
+  default     = "10.13.0.0/24"
+}
+
 # Load Balancer Configuration
 variable "health_check_port" {
   description = "Port for health check"
