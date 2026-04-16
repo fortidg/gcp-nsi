@@ -1,4 +1,11 @@
-# Compute Instance Template for FortiGate NSI
+# NOTE: This instance template is NOT used by the main unmanaged instance group deployment.
+# It's kept here for reference and for use with the MIG-based deployments in:
+# - update-template/ (for rolling updates)
+# - separated/producer/ (alternative MIG deployment)
+#
+# The main deployment now uses individual instances defined in instance_group.tf
+
+# Compute Instance Template for FortiGate NSI (Reference Only)
 resource "google_compute_instance_template" "fortigate_template" {
   name        = "${local.prefix}-fgt-nsi762-v5-${random_string.suffix.result}"
   description = "FortiGate NSI instance template for traffic inspection"

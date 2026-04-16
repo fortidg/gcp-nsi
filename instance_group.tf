@@ -1,33 +1,84 @@
-# Managed Instance Group for FortiGate NSI
-resource "google_compute_region_instance_group_manager" "fortigate_mig" {
-  name               = "${local.prefix}-fgt-nsi-${var.region}-multi-ig"
-  base_instance_name = "${local.prefix}-fgt-nsi"
-  region             = var.region
-  target_size        = var.fortigate_instance_count
+# Individual FortiGate Instances for Unmanaged Instance Group
+resource "google_compute_instance" "fortigate_instances" {
+  for_each = toset(var.zones)
 
-  version {
-    instance_template = google_compute_instance_template.fortigate_template.id
+  name         = "${local.prefix}-fgt-nsi-${each.key}"
+  machine_type = var.fortigate_machine_type
+  zone         = each.key
+
+  # Boot disk configuration
+  boot_disk {
+    auto_delete = true
+    device_name = "${local.prefix}-fgt-boot-${each.key}"
+    initialize_params {
+      image = data.google_compute_image.fortigate_image.self_link
+      size  = 50
+      type  = "hyperdisk-balanced"
+    }
   }
 
-  # Distribution across zones
-  distribution_policy_zones = var.zones
-
-  # Auto healing policy
-  auto_healing_policies {
-    health_check      = google_compute_health_check.fortigate_health_check.id
-    initial_delay_sec = 600
+  # Port 1 - Data/Inspection interface
+  network_interface {
+    network    = google_compute_network.vpc_networks["inspection"].id
+    subnetwork = google_compute_subnetwork.subnets["inspection_central"].id
+    stack_type = "IPV4_ONLY"
   }
 
-  # Update policy
-  update_policy {
-    type                         = "PROACTIVE"
-    instance_redistribution_type = "PROACTIVE"
-    minimal_action               = "REPLACE"
-    max_surge_fixed              = 3
-    max_unavailable_fixed        = 0
+  # Port 2 - Management interface
+  network_interface {
+    network    = google_compute_network.vpc_networks["management"].id
+    subnetwork = google_compute_subnetwork.subnets["management_central"].id
+    stack_type = "IPV4_ONLY"
+
+    # Enable external IP for management access
+    access_config {
+      network_tier = "PREMIUM"
+    }
   }
 
-  # Named ports for load balancer
+  # Service account for API access
+  service_account {
+    scopes = ["cloud-platform"]
+  }
+
+  # Instance metadata
+  metadata = {
+    enable-oslogin = "TRUE"
+    user-data = templatefile("${path.module}/templates/fortigate-config.tpl", {
+      admin_port = var.admin_port
+      admin_pass = var.admin_password
+      fmg_ip     = var.fmg_ip
+      fmg        = var.fmg
+      mgmt_gw    = google_compute_subnetwork.subnets["management_central"].gateway_address
+      insp_gw    = google_compute_subnetwork.subnets["inspection_central"].gateway_address
+    })
+  }
+
+  # Tags for firewall rules
+  tags = ["fortigate-nsi", "allow-health-check"]
+
+  # Enable IP forwarding for traffic inspection
+  can_ip_forward = true
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+# Unmanaged Instance Group per zone for FortiGate NSI
+resource "google_compute_instance_group" "fortigate_uig" {
+  for_each = toset(var.zones)
+
+  name        = "${local.prefix}-fgt-nsi-uig-${each.key}"
+  description = "Unmanaged instance group for FortiGate NSI in ${each.key}"
+  zone        = each.key
+
+  # Add the FortiGate instance to the group
+  instances = [
+    google_compute_instance.fortigate_instances[each.key].id
+  ]
+
+  # Named port for GENEVE traffic
   named_port {
     name = "geneve"
     port = 6081

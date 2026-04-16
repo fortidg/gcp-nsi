@@ -48,20 +48,28 @@ output "subnets" {
 }
 
 # FortiGate Outputs
-output "fortigate_instance_template" {
-  description = "FortiGate instance template details"
+output "fortigate_instances" {
+  description = "Individual FortiGate instance details"
   value = {
-    id   = google_compute_instance_template.fortigate_template.id
-    name = google_compute_instance_template.fortigate_template.name
+    for k, v in google_compute_instance.fortigate_instances : k => {
+      id                = v.id
+      name              = v.name
+      zone              = v.zone
+      inspection_ip     = v.network_interface[0].network_ip
+      management_ip     = v.network_interface[1].network_ip
+      management_ext_ip = v.network_interface[1].access_config[0].nat_ip
+    }
   }
 }
 
-output "fortigate_instance_group" {
-  description = "FortiGate managed instance group details"
+output "fortigate_instance_groups" {
+  description = "Unmanaged instance groups for FortiGate NSI"
   value = {
-    id             = google_compute_region_instance_group_manager.fortigate_mig.id
-    name           = google_compute_region_instance_group_manager.fortigate_mig.name
-    instance_group = google_compute_region_instance_group_manager.fortigate_mig.instance_group
+    for k, v in google_compute_instance_group.fortigate_uig : k => {
+      id   = v.id
+      name = v.name
+      zone = v.zone
+    }
   }
 }
 

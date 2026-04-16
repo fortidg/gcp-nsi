@@ -22,7 +22,7 @@ This guide covers deploying FortiGate NSI with two peered Web VPCs for traffic i
 
 ```
 Inspection VPC (10.50.160.0/24)
-    └── FortiGate MIG (3 instances)
+    └── FortiGate Instances (3 instances in unmanaged groups)
          │
          ├─ NSI Inspection ─┐
          │                  │
@@ -30,6 +30,8 @@ Inspection VPC (10.50.160.0/24)
  (10.12.0.0/24)        (10.13.0.0/24)
     3 Windows VMs        3 Windows VMs
 ```
+
+**Note:** This deployment uses **Unmanaged Instance Groups** for more control over individual FortiGate instances. See [UNMANAGED_INSTANCE_GROUP.md](UNMANAGED_INSTANCE_GROUP.md) for details.
 
 ## Step-by-Step Deployment
 
@@ -71,7 +73,8 @@ terraform apply
 - ✅ 4 VPC networks (Inspection, Management, Web, Web2)
 - ✅ 4 Subnets (one per VPC)
 - ✅ VPC Peering between Web and Web2
-- ✅ FortiGate MIG with 3 instances
+- ✅ 3 FortiGate instances (one per zone)
+- ✅ 3 Unmanaged Instance Groups (one per zone, containing one FortiGate each)
 - ✅ Internal Load Balancer with 3 forwarding rules
 - ✅ 6 Windows Server VMs (3 in Web VPC, 3 in Web2 VPC)
 - ✅ Firewall rules for all VPCs
@@ -134,12 +137,16 @@ gcloud beta network-security intercept-deployments list --location=us-central1-a
 gcloud beta network-security intercept-endpoint-groups list
 gcloud beta network-security intercept-endpoint-group-associations list
 
-# Check FortiGate Health
-gcloud compute instance-groups managed describe fgt-nsi-fortigate-mig --region=us-central1
+# Check FortiGate Instances
+gcloud compute instances list --filter="name~'fgt-nsi-fgt-nsi-us-central1'"
+
+# Check FortiGate Instance Groups
+gcloud compute instance-groups unmanaged list --filter="name~'fgt-nsi-fgt-nsi-uig'"
 
 # Get VM IPs for testing
 terraform output web_servers
 terraform output web2_servers
+terraform output fortigate_instances
 ```
 
 ## Testing NSI Traffic Inspection

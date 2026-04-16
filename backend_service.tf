@@ -1,15 +1,18 @@
 # Backend Service for FortiGate NSI Load Balancer
 resource "google_compute_region_backend_service" "fortigate_backend_service" {
   name                  = "${local.prefix}-fgt-nsi-${var.region}-lb"
-  description           = "Backend service for FortiGate NSI load balancer"
+  description           = "Backend service for FortiGate NSI load balancer with unmanaged instance groups"
   region                = var.region
   protocol              = "UDP"
   load_balancing_scheme = "INTERNAL"
 
-  # Backend pointing to the FortiGate MIG
-  backend {
-    group          = google_compute_region_instance_group_manager.fortigate_mig.instance_group
-    balancing_mode = "CONNECTION"
+  # Backends pointing to unmanaged instance groups (one per zone)
+  dynamic "backend" {
+    for_each = var.zones
+    content {
+      group          = google_compute_instance_group.fortigate_uig[backend.value].id
+      balancing_mode = "CONNECTION"
+    }
   }
 
   # Health check
