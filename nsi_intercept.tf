@@ -97,5 +97,4 @@ output "web2_servers_info" {
     web2_vpc          = google_compute_network.vpc_networks["web2"].name
     test_command      = "From Web VPC servers, ping Web2 VPC servers to test NSI inspection"
   }
-  }
 }
