@@ -22,6 +22,16 @@ variable "prefix" {
 }
 
 # FortiGate Configuration Variables
+variable "fortigate_license_type" {
+  description = "FortiGate license type (payg or byol)"
+  type        = string
+  default     = "payg"
+  validation {
+    condition     = contains(["payg", "byol"], var.fortigate_license_type)
+    error_message = "License type must be either 'payg' or 'byol'."
+  }
+}
+
 variable "fortigate_machine_type" {
   description = "Machine type for FortiGate instances"
   type        = string
@@ -37,7 +47,6 @@ variable "fortigate_instance_count" {
 variable "zones" {
   description = "List of zones for distributing FortiGate instances"
   type        = list(string)
-  default     = ["us-central1-a", "us-central1-b", "us-central1-c"]
 }
 
 # FortiGate Admin Configuration
@@ -115,4 +124,17 @@ variable "tags" {
   description = "Additional tags to apply to resources"
   type        = map(string)
   default     = {}
+}
+
+variable "instance_configs" {
+  description = "Per-instance configuration for FortiGate instances, keyed by zone"
+  type = map(object({
+    custom_metadata = optional(map(string), {})
+    flx_tok         = optional(string)
+    admin_port      = optional(number)
+    admin_password  = optional(string)
+    fmg_ip          = optional(string)
+    fmg             = optional(string)
+  }))
+  default = {}
 }

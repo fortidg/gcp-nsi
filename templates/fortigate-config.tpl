@@ -255,3 +255,16 @@ end
 %{ endif }
 
 --==FGTCONF==
+
+%{ if flx_tok != "" }
+--==FGTCONF==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="license"
+
+execute vm-license ${flx_tok}
+
+%{ endif }
+
+--==FGTCONF==

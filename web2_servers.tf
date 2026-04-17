@@ -1,10 +1,6 @@
 # Web Server VMs in Web2 VPC for NSI traffic inspection demonstration
 resource "google_compute_instance" "web2_servers" {
-  for_each = {
-    "us-central1-a" = "fgt-nsi-web2-us-central1a"
-    "us-central1-b" = "fgt-nsi-web2-us-central1b"
-    "us-central1-c" = "fgt-nsi-web2-us-central1c"
-  }
+  for_each = { for zone in var.zones : zone => "fgt-nsi-web2-${replace(zone, "-", "")}" }
 
   name         = each.value
   machine_type = "e2-medium"

@@ -32,7 +32,7 @@ resource "random_string" "suffix" {
 
 # Data source for FortiGate image
 data "google_compute_image" "fortigate_image" {
-  family  = "fortigate-76-payg"
+  family  = "fortigate-76-${var.fortigate_license_type}"
   project = "fortigcp-project-001"
 }
 

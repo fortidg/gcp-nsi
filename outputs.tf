@@ -165,29 +165,7 @@ output "nsi_deployment_instructions" {
       --no-async
     
     2. Create intercept deployments for each zone:
-    gcloud beta network-security intercept-deployments create fgt-nsi-us-central1a \
-      --location=us-central1-a \
-      --project=${var.project_id} \
-      --forwarding-rule=${google_compute_forwarding_rule.fortigate_forwarding_rules["us-central1-a"].name} \
-      --intercept-deployment-group=projects/${var.project_id}/locations/global/interceptDeploymentGroups/newfgt-nsi-ftnt-dg \
-      --forwarding-rule-location=${var.region} \
-      --no-async
-    
-    gcloud beta network-security intercept-deployments create fgt-nsi-us-central1b \
-      --location=us-central1-b \
-      --project=${var.project_id} \
-      --forwarding-rule=${google_compute_forwarding_rule.fortigate_forwarding_rules["us-central1-b"].name} \
-      --intercept-deployment-group=projects/${var.project_id}/locations/global/interceptDeploymentGroups/newfgt-nsi-ftnt-dg \
-      --forwarding-rule-location=${var.region} \
-      --no-async
-    
-    gcloud beta network-security intercept-deployments create fgt-nsi-us-central1c1 \
-      --location=us-central1-c \
-      --project=${var.project_id} \
-      --forwarding-rule=${google_compute_forwarding_rule.fortigate_forwarding_rules["us-central1-c"].name} \
-      --intercept-deployment-group=projects/${var.project_id}/locations/global/interceptDeploymentGroups/newfgt-nsi-ftnt-dg \
-      --forwarding-rule-location=${var.region} \
-      --no-async
+    ${join("\n    \n    ", [for zone in var.zones : "gcloud beta network-security intercept-deployments create fgt-nsi-${replace(zone, "-", "")} \\\n      --location=${zone} \\\n      --project=${var.project_id} \\\n      --forwarding-rule=${google_compute_forwarding_rule.fortigate_forwarding_rules[zone].name} \\\n      --intercept-deployment-group=projects/${var.project_id}/locations/global/interceptDeploymentGroups/newfgt-nsi-ftnt-dg \\\n      --forwarding-rule-location=${var.region} \\\n      --no-async"])}
     
     3. Create intercept endpoint group:
     gcloud beta network-security intercept-endpoint-groups create newfgt-nsi-ftnt-epg \

@@ -143,8 +143,8 @@ cleanup_nsi_resources() {
 
     print_step "7. Deleting intercept endpoint group..."
     # Wait for the async association deletion to fully propagate before removing the group
-    print_status "Waiting 20s for endpoint group association deletion to propagate..."
-    sleep 20
+    print_status "Waiting 45s for endpoint group association deletion to propagate..."
+    sleep 45
     delete_or_skip "intercept endpoint group newfgt-nsi-ftnt-epg" \
         gcloud beta network-security intercept-endpoint-groups delete newfgt-nsi-ftnt-epg \
             --project "$PROJECT_ID" \
@@ -177,8 +177,8 @@ cleanup_nsi_resources() {
 
     print_step "9. Deleting intercept deployment group..."
     # Wait for async deployment deletions to settle before removing the group
-    print_status "Waiting 15s for deployment deletions to propagate..."
-    sleep 15
+    print_status "Waiting 30s for deployment deletions to propagate..."
+    sleep 30
     delete_or_skip "intercept deployment group newfgt-nsi-ftnt-dg" \
         gcloud beta network-security intercept-deployment-groups delete newfgt-nsi-ftnt-dg \
             --location global \

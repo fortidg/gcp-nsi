@@ -1,10 +1,6 @@
 # Web Server VMs for testing NSI functionality
 resource "google_compute_instance" "web_servers" {
-  for_each = {
-    "us-central1-a" = "fgt-nsi-web-us-central1a"
-    "us-central1-b" = "fgt-nsi-web-us-central1b"
-    "us-central1-c" = "fgt-nsi-web-us-central1c"
-  }
+  for_each = { for zone in var.zones : zone => "fgt-nsi-web-${replace(zone, "-", "")}" }
 
   name         = each.value
   machine_type = "e2-medium"
