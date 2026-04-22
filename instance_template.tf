@@ -47,12 +47,15 @@ resource "google_compute_instance_template" "fortigate_template" {
   metadata = {
     enable-oslogin = "TRUE"
     user-data = templatefile("${path.module}/templates/fortigate-config.tpl", {
-      admin_port = var.admin_port
-      admin_pass = var.admin_password
-      fmg_ip     = var.fmg_ip
-      fmg = var.fmg
-      mgmt_gw    = google_compute_subnetwork.subnets["management_central"].gateway_address
-      insp_gw    = google_compute_subnetwork.subnets["inspection_central"].gateway_address
+      admin_port        = var.admin_port
+      admin_pass        = var.admin_password
+      fmg_ip            = var.fmg_ip
+      fmg               = var.fmg
+      mgmt_gw           = google_compute_subnetwork.subnets["management_central"].gateway_address
+      insp_gw           = google_compute_subnetwork.subnets["inspection_central"].gateway_address
+      ilb_ip            = google_compute_address.ilb_ip.address
+      health_check_port = var.health_check_port
+      frontend_ips      = [for k, v in google_compute_address.ilb_frontend_ips : v.address]
     })
   }
 

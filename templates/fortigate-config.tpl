@@ -49,6 +49,21 @@ config system interface
         set mtu-override enable
         set mtu 1460
     next
+    edit port1-ilb-probe
+        set vdom root
+        set ip ${ilb_ip} 255.255.255.255
+        set allowaccess probe-response
+        set type loopback
+        set secondary-IP enable
+        config secondaryip
+%{ for idx, frontend_ip in frontend_ips ~}
+            edit ${idx + 1}
+                set ip ${frontend_ip} 255.255.255.255
+                set allowaccess probe-response
+            next
+%{ endfor ~}
+        end
+    next
     edit gcp
         set vdom root
         set type geneve
@@ -59,17 +74,19 @@ config system interface
     next
 end
 
-config system httpd
-    set admin-https-pki-required disable
-    set admin-sport ${admin_port}
-    set admin-server-cert Fortinet_Factory
-end
-
 config system probe-response
-    set port 8080
+    set port ${health_check_port}
     set http-probe-value OK
     set mode http-probe
 end
+
+config firewall service custom
+    edit ProbeService
+        set comment "Default Probe for GCP on port ${health_check_port}"
+        set tcp-portrange ${health_check_port}
+    next
+end
+
 
 config router static
     edit 1
@@ -112,16 +129,19 @@ config router policy
     next
 end
 
-# Health check configuration
-config system probe-response
-    set mode http-probe
-    set http-probe-value OK
-    set port 8080
-end
-
 # Basic firewall policy for NSI traffic
 config firewall policy
     edit 1
+        set name Allow-ILB-Probe-Port1
+        set srcintf port1
+        set dstintf port1-ilb-probe
+        set srcaddr all
+        set dstaddr all
+        set action accept
+        set schedule always
+        set service ProbeService
+    next
+    edit 2
         set name nsi-inspection
         set srcintf port1
         set dstintf port1
@@ -130,7 +150,6 @@ config firewall policy
         set dstaddr all
         set schedule always
         set service ALL
-        set comments NSI traffic inspection
         set inspection-mode flow
         set utm-status enable
     next
@@ -221,7 +240,6 @@ config firewall policy
         set service ALL
         set utm-status enable
         set ssl-ssh-profile custom-cert
-        set webfilter-profile doc-example-webfilter-profile
         set logtraffic all
     next
 end

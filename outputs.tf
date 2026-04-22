@@ -82,6 +82,14 @@ output "health_check" {
   }
 }
 
+output "ilb_ip_address" {
+  description = "Internal Load Balancer static IP address"
+  value = {
+    address = google_compute_address.ilb_ip.address
+    name    = google_compute_address.ilb_ip.name
+  }
+}
+
 output "forwarding_rules" {
   description = "Internal load balancer forwarding rules"
   value = {
@@ -90,6 +98,14 @@ output "forwarding_rules" {
       name       = v.name
       ip_address = v.ip_address
     }
+  }
+}
+
+output "frontend_ips" {
+  description = "Frontend IP addresses configured as secondary IPs on FortiGate loopback interface"
+  value = {
+    addresses = [for k, v in google_compute_address.ilb_frontend_ips : v.address]
+    names     = [for k, v in google_compute_address.ilb_frontend_ips : v.name]
   }
 }
 
