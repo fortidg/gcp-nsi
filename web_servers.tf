@@ -12,8 +12,8 @@ resource "google_compute_instance" "web_servers" {
 
   boot_disk {
     initialize_params {
-      image = "projects/windows-cloud/global/images/family/windows-2025"
-      size  = 50
+      image = "projects/debian-cloud/global/images/family/debian-12"
+      size  = 20
       type  = "pd-balanced"
     }
     auto_delete = true
@@ -28,15 +28,44 @@ resource "google_compute_instance" "web_servers" {
     }
   }
 
-  # Windows license and metadata
+  # Startup script to install iperf3 and apache2
   metadata = {
-    enable-oslogin = "FALSE"
-    # Add your Windows license key here if needed
-    # windows-keys = "your-windows-key-here"
+    enable-oslogin = "TRUE"
+    startup-script = <<-EOF
+      #!/bin/bash
+      apt-get update
+      apt-get install -y iperf3 apache2
+
+      # Configure iperf3 as a service
+      cat > /etc/systemd/system/iperf3.service <<'IPERF_EOF'
+      [Unit]
+      Description=iPerf3 Server
+      After=network.target
+
+      [Service]
+      Type=simple
+      ExecStart=/usr/bin/iperf3 -s
+      Restart=always
+      RestartSec=5
+
+      [Install]
+      WantedBy=multi-user.target
+      IPERF_EOF
+
+      # Start and enable services
+      systemctl daemon-reload
+      systemctl enable iperf3
+      systemctl start iperf3
+      systemctl enable apache2
+      systemctl start apache2
+
+      # Create a simple index page with hostname
+      echo "<h1>NSI Test Server - $(hostname)</h1><p>Zone: ${each.key}</p>" > /var/www/html/index.html
+    EOF
   }
 
-  # Allow HTTP/HTTPS traffic
-  tags = ["web-server", "allow-http-https"]
+  # Allow HTTP/HTTPS and iperf3 traffic
+  tags = ["web-server", "allow-http-https", "allow-iperf3"]
 
   # Prevent accidental deletion
   lifecycle {
@@ -48,11 +77,11 @@ resource "google_compute_instance" "web_servers" {
 resource "google_compute_firewall" "web_server_firewall" {
   name        = "${local.prefix}-web-server-allow"
   network     = google_compute_network.vpc_networks["web"].id
-  description = "Allow HTTP, HTTPS, and RDP to web servers"
+  description = "Allow HTTP, HTTPS, SSH, and iperf3 to web servers"
 
   allow {
     protocol = "tcp"
-    ports    = ["80", "443", "3389"]
+    ports    = ["22", "80", "443", "5201"]
   }
 
   allow {
@@ -60,5 +89,5 @@ resource "google_compute_firewall" "web_server_firewall" {
   }
 
   source_ranges = ["0.0.0.0/0"]
-  target_tags   = ["web-server"]
+  target_tags   = ["web-server", "allow-iperf3"]
 }

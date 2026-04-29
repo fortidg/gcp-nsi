@@ -70,7 +70,8 @@ config system interface
         set snmp-index 9
         set interface port1
         set mtu-override enable
-        set mtu 1522
+        set mtu 1355
+        set tcp-mss 1355
     next
 end
 
@@ -78,6 +79,17 @@ config system probe-response
     set port ${health_check_port}
     set http-probe-value OK
     set mode http-probe
+end
+
+config system affinity-packet-redistribution
+    edit 1
+        set interface port1
+        set affinity-cpumask 0xFF
+    next
+    edit 2
+        set interface port2
+        set affinity-cpumask 0xFF
+    next
 end
 
 config firewall service custom
