@@ -242,7 +242,7 @@ locals {
       description = "Allow Google Cloud health checks on management network"
     }
 
-    # Web2 VPC - allow all ingress for demonstration
+/*     # Web2 VPC - allow all ingress for demonstration
     web2_allow_ingress = {
       name          = "${local.prefix}-fgt-nsi-web2-allow-all-in"
       network       = "web2"
@@ -286,6 +286,6 @@ locals {
         }
       ]
       description = "Allow all outgoing traffic for Web2 VPC"
-    }
+    } */
   }
 }

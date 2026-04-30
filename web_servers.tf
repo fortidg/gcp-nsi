@@ -2,8 +2,8 @@
 resource "google_compute_instance" "web_servers" {
   for_each = {
     "us-central1-a" = "fgt-nsi-web-us-central1a"
-    "us-central1-b" = "fgt-nsi-web-us-central1b"
-    "us-central1-c" = "fgt-nsi-web-us-central1c"
+/*     "us-central1-b" = "fgt-nsi-web-us-central1b"
+    "us-central1-c" = "fgt-nsi-web-us-central1c" */
   }
 
   name         = each.value
@@ -33,8 +33,35 @@ resource "google_compute_instance" "web_servers" {
     enable-oslogin = "TRUE"
     startup-script = <<-EOF
       #!/bin/bash
+      set -e
+
+      # Log output to file
+      exec > >(tee -a /var/log/startup-script.log)
+      exec 2>&1
+
+      echo "Starting startup script at $(date)"
+
+      # Update package list
       apt-get update
-      apt-get install -y iperf3 apache2
+
+      # Install packages with proper error handling
+      DEBIAN_FRONTEND=noninteractive apt-get install -y iperf3 apache2
+
+      # Wait for Apache2 to be fully installed
+      sleep 5
+
+      # Create a simple index page with hostname
+      cat > /var/www/html/index.html <<'HTML_EOF'
+      <!DOCTYPE html>
+      <html>
+      <head><title>NSI Test Server</title></head>
+      <body>
+        <h1>NSI Test Server - $(hostname)</h1>
+        <p>Zone: ${each.key}</p>
+        <p>Server Time: $(date)</p>
+      </body>
+      </html>
+      HTML_EOF
 
       # Configure iperf3 as a service
       cat > /etc/systemd/system/iperf3.service <<'IPERF_EOF'
@@ -52,15 +79,23 @@ resource "google_compute_instance" "web_servers" {
       WantedBy=multi-user.target
       IPERF_EOF
 
-      # Start and enable services
+      # Reload systemd and start services
       systemctl daemon-reload
+
+      # Enable and start iperf3
       systemctl enable iperf3
       systemctl start iperf3
-      systemctl enable apache2
-      systemctl start apache2
 
-      # Create a simple index page with hostname
-      echo "<h1>NSI Test Server - $(hostname)</h1><p>Zone: ${each.key}</p>" > /var/www/html/index.html
+      # Enable and restart apache2 to ensure clean start
+      systemctl enable apache2
+      systemctl restart apache2
+
+      # Verify services are running
+      sleep 2
+      systemctl is-active --quiet apache2 && echo "Apache2 is running" || echo "Apache2 failed to start"
+      systemctl is-active --quiet iperf3 && echo "iPerf3 is running" || echo "iPerf3 failed to start"
+
+      echo "Startup script completed at $(date)"
     EOF
   }
 
@@ -77,15 +112,11 @@ resource "google_compute_instance" "web_servers" {
 resource "google_compute_firewall" "web_server_firewall" {
   name        = "${local.prefix}-web-server-allow"
   network     = google_compute_network.vpc_networks["web"].id
-  description = "Allow HTTP, HTTPS, SSH, and iperf3 to web servers"
+  description = "Allow HTTP, HTTPS and SSH to web servers"
 
   allow {
     protocol = "tcp"
-    ports    = ["22", "80", "443", "5201"]
-  }
-
-  allow {
-    protocol = "icmp"
+    ports    = ["22", "80", "443"]
   }
 
   source_ranges = ["0.0.0.0/0"]
