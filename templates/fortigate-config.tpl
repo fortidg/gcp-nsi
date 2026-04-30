@@ -267,6 +267,42 @@ config system dns
     set vrf-select 5
 end
 
+config system affinity-interrupt
+    edit 1
+        set interrupt "eth0-ntfy-block.0"
+        set affinity-cpumask "0x0000000000000001"
+    next
+    edit 2
+        set interrupt "eth0-ntfy-block.1"
+        set affinity-cpumask "0x0000000000000002"
+    next
+    edit 3
+        set interrupt "eth0-ntfy-block.2"
+        set affinity-cpumask "0x0000000000000004"
+    next
+    edit 4
+        set interrupt "eth0-ntfy-block.3"
+        set affinity-cpumask "0x0000000000000008"
+    next
+    edit 5
+        set interrupt "eth1-ntfy-block.0"
+        set affinity-cpumask "0x0000000000000001"
+    next
+    edit 6
+        set interrupt "eth1-ntfy-block.1"
+        set affinity-cpumask "0x0000000000000002"
+    next
+    edit 7
+        set interrupt "eth1-ntfy-block.2"
+        set affinity-cpumask "0x0000000000000004"
+    next
+    edit 8
+        set interrupt "eth1-ntfy-block.3"
+        set affinity-cpumask "0x0000000000000008"
+    next
+end
+
+
 %{ if fmg == "true" }
 --==FGTCONF==
 Content-Type: text/plain; charset="us-ascii"
