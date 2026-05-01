@@ -99,8 +99,8 @@ resource "google_compute_instance" "web_servers" {
     EOF
   }
 
-  # Allow HTTP/HTTPS and iperf3 traffic
-  tags = ["web-server", "allow-http-https", "allow-iperf3"]
+  # Allow HTTPS and SSH traffic
+  tags = ["web-server", "allow-https-ssh"]
 
   # Prevent accidental deletion
   lifecycle {
@@ -112,13 +112,13 @@ resource "google_compute_instance" "web_servers" {
 resource "google_compute_firewall" "web_server_firewall" {
   name        = "${local.prefix}-web-server-allow"
   network     = google_compute_network.vpc_networks["web"].id
-  description = "Allow HTTP, HTTPS and SSH to web servers"
+  description = "Allow HTTPS and SSH to web servers"
 
   allow {
     protocol = "tcp"
-    ports    = ["22", "80", "443"]
+    ports    = ["22", "443"]
   }
 
   source_ranges = ["0.0.0.0/0"]
-  target_tags   = ["web-server", "allow-iperf3"]
+  target_tags   = ["web-server", "allow-https-ssh"]
 }

@@ -18,12 +18,12 @@ resource "google_compute_instance_template" "fortigate_template" {
   }
 
   # Network interfaces
-  # Port 1 - Data/Inspection interface 
+  # Port 1 - Data/Inspection interface
   network_interface {
     network    = google_compute_network.vpc_networks["inspection"].id
     subnetwork = google_compute_subnetwork.subnets["inspection_central"].id
-    # network_tier       = "PREMIUM"
     stack_type = "IPV4_ONLY"
+    nic_type   = "GVNIC"
   }
 
   # Port 2 - Management interface
@@ -32,6 +32,7 @@ resource "google_compute_instance_template" "fortigate_template" {
     subnetwork = google_compute_subnetwork.subnets["management_central"].id
     # network_tier       = "PREMIUM"
     stack_type = "IPV4_ONLY"
+    nic_type   = "GVNIC"
     # Enable external IP for management access
     access_config {
       network_tier = "PREMIUM"
