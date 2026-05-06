@@ -39,7 +39,7 @@ config system interface
         set allowaccess ping https ssh http probe-response
         set type physical
         set mtu-override enable
-        set mtu 1600
+        set mtu 1768
     next
     edit port2
         set vdom root
@@ -70,8 +70,8 @@ config system interface
         set snmp-index 9
         set interface port1
         set mtu-override enable
-        set mtu 1355
-        set tcp-mss 1355
+        set mtu 1460
+        set tcp-mss 1420
     next
 end
 
