@@ -47,9 +47,10 @@ locals {
       name                    = "${local.prefix}-fgt-nsi-ib-new"
       description             = "NIS data or traffic VPC network with regional subnets"
       auto_create_subnetworks = false
+      mtu                     = 8896
     }
 
-    # Management VPC  
+    # Management VPC
     management = {
       name                    = "${local.prefix}-fgt-nsi-ib-new-mgmt"
       description             = "FortiGate management VPC network with regional subnets"
@@ -61,6 +62,7 @@ locals {
       name                    = "${local.prefix}-fgt-nsi-ib-new-web"
       description             = "Public Web VPC network with regional subnets"
       auto_create_subnetworks = false
+      mtu                     = 8588
     }
 
     # Second Web VPC for NSI demonstration
@@ -68,6 +70,7 @@ locals {
       name                    = "${local.prefix}-fgt-nsi-ib-new-web2"
       description             = "Second Web VPC network for NSI traffic inspection demo"
       auto_create_subnetworks = false
+      mtu                     = 8588
     }
   }
 
