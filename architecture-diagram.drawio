@@ -1,0 +1,392 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="GCP NSI Architecture" id="gcp-nsi-architecture">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- GCP Project Container -->
+        <mxCell id="gcp-project" value="GCP Project" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;verticalAlign=top;fontSize=16;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="1520" height="1120" as="geometry"/>
+        </mxCell>
+
+        <!-- Inspection VPC -->
+        <mxCell id="inspection-vpc" value="Inspection VPC&lt;br&gt;fgt-nsi-ib-new&lt;br&gt;MTU: 1768" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1f5fe;strokeColor=#01579b;verticalAlign=top;fontSize=14;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="80" y="100" width="440" height="300" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="inspection-subnet" value="Inspection Subnet&lt;br&gt;fgt-nsi-central&lt;br&gt;10.50.160.0/24&lt;br&gt;us-central1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b3e5fc;strokeColor=#01579b;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="120" y="160" width="360" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="ilb" value="Internal Load Balancer&lt;br&gt;Backend Service&lt;br&gt;fgt-nsi-us-central1-lb&lt;br&gt;Protocol: UDP" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#2e7d32;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="120" y="260" width="360" height="100" as="geometry"/>
+        </mxCell>
+
+        <!-- Management VPC -->
+        <mxCell id="management-vpc" value="Management VPC&lt;br&gt;fgt-nsi-ib-new-mgmt" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#e65100;verticalAlign=top;fontSize=14;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="80" y="440" width="440" height="200" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="management-subnet" value="Management Subnet&lt;br&gt;fgt-nsi1-mgmt-central&lt;br&gt;10.50.180.0/24&lt;br&gt;us-central1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe0b2;strokeColor=#e65100;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="120" y="500" width="360" height="100" as="geometry"/>
+        </mxCell>
+
+        <!-- Web VPC -->
+        <mxCell id="web-vpc" value="Web VPC&lt;br&gt;fgt-nsi-ib-new-web" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#2e7d32;verticalAlign=top;fontSize=14;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="80" y="680" width="440" height="220" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="web-subnet" value="Web Subnet&lt;br&gt;fgt-nsi-web1-central&lt;br&gt;10.12.0.0/24&lt;br&gt;us-central1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#2e7d32;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="120" y="740" width="360" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="web-server" value="Web Server VM&lt;br&gt;fgt-nsi-web-us-central1a&lt;br&gt;e2-medium&lt;br&gt;Apache2 + iperf3" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#a5d6a7;strokeColor=#2e7d32;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="200" y="830" width="200" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Web2 VPC -->
+        <mxCell id="web2-vpc" value="Web2 VPC&lt;br&gt;fgt-nsi-ib-new-web2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#7b1fa2;verticalAlign=top;fontSize=14;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="80" y="940" width="440" height="200" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="web2-subnet" value="Web2 Subnet&lt;br&gt;fgt-nsi-web2-central&lt;br&gt;10.13.0.0/24&lt;br&gt;us-central1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7b1fa2;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="120" y="1000" width="360" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="web2-server" value="Web2 Server VM&lt;br&gt;fgt-nsi-web2-us-central1c&lt;br&gt;e2-medium&lt;br&gt;Apache2 + iperf3" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ce93d8;strokeColor=#7b1fa2;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="200" y="1080" width="200" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- FortiGate Infrastructure -->
+        <mxCell id="fortigate-container" value="FortiGate Infrastructure" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#f57f17;verticalAlign=top;fontSize=14;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="600" y="100" width="520" height="540" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="instance-template" value="Instance Template&lt;br&gt;fgt-nsi762-v5&lt;br&gt;c4-standard-4&lt;br&gt;FortiGate 7.6 PAYG" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffecb3;strokeColor=#f57f17;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="640" y="160" width="200" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="mig" value="Managed Instance Group&lt;br&gt;fgt-nsi-us-central1-grp&lt;br&gt;Target Size: 3&lt;br&gt;Auto-healing enabled" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe082;strokeColor=#f57f17;verticalAlign=top;fontSize=12;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="640" y="280" width="440" height="320" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="fgt1" value="FortiGate-1&lt;br&gt;us-central1-a&lt;br&gt;Port1: Inspection&lt;br&gt;Port2: Management" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffd54f;strokeColor=#f57f17;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="680" y="340" width="120" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="fgt2" value="FortiGate-2&lt;br&gt;us-central1-b&lt;br&gt;Port1: Inspection&lt;br&gt;Port2: Management" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffd54f;strokeColor=#f57f17;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="820" y="340" width="120" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="fgt3" value="FortiGate-3&lt;br&gt;us-central1-c&lt;br&gt;Port1: Inspection&lt;br&gt;Port2: Management" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffd54f;strokeColor=#f57f17;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="960" y="340" width="120" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="health-check" value="Health Check&lt;br&gt;doc-nsi-hc&lt;br&gt;Port: 8080&lt;br&gt;Protocol: HTTP" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#2e7d32;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="680" y="450" width="360" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="forwarding-rules-container" value="Forwarding Rules (UDP:6081)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#2e7d32;verticalAlign=top;fontSize=11;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="680" y="520" width="360" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="fwd-a" value="fgt-us-central1a&lt;br&gt;Zone: a" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#a5d6a7;strokeColor=#2e7d32;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="700" y="550" width="100" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="fwd-b" value="fgt-us-central1b&lt;br&gt;Zone: b" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#a5d6a7;strokeColor=#2e7d32;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="820" y="550" width="100" height="30" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="fwd-c" value="fgt-us-central1c1&lt;br&gt;Zone: c" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#a5d6a7;strokeColor=#2e7d32;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="940" y="550" width="100" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- NSI Components (gcloud created) -->
+        <mxCell id="nsi-container" value="NSI Components (Created via gcloud)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffccbc;strokeColor=#bf360c;verticalAlign=top;fontSize=14;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="100" width="360" height="820" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="intercept-dg" value="Intercept Deployment Group&lt;br&gt;newfgt-nsi-ftnt-dg&lt;br&gt;Location: global&lt;br&gt;Network: inspection" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffab91;strokeColor=#bf360c;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="160" width="280" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="intercept-dep-container" value="Intercept Deployments" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ff8a65;strokeColor=#bf360c;verticalAlign=top;fontSize=11;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="250" width="280" height="130" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="intercept-dep-a" value="fgt-nsi-us-central1a&lt;br&gt;us-central1-a" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ff7043;strokeColor=#bf360c;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="280" width="240" height="25" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="intercept-dep-b" value="fgt-nsi-us-central1b&lt;br&gt;us-central1-b" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ff7043;strokeColor=#bf360c;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="315" width="240" height="25" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="intercept-dep-c" value="fgt-nsi-us-central1c1&lt;br&gt;us-central1-c" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ff7043;strokeColor=#bf360c;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="350" width="240" height="25" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="intercept-epg" value="Intercept Endpoint Group&lt;br&gt;newfgt-nsi-ftnt-epg&lt;br&gt;Location: global" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffab91;strokeColor=#bf360c;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="400" width="280" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="epg-assoc-container" value="Endpoint Group Associations" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ff8a65;strokeColor=#bf360c;verticalAlign=top;fontSize=11;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="480" width="280" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="epg-assoc-web" value="Web VPC Association&lt;br&gt;new-fgt-nsi-ftnt-epg-assoc" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ff7043;strokeColor=#bf360c;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="510" width="240" height="20" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="epg-assoc-web2" value="Web2 VPC Association&lt;br&gt;...epg-assoc-web2" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ff7043;strokeColor=#bf360c;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="535" width="240" height="20" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="security-profile" value="Security Profile&lt;br&gt;newfgt-nsi-ftnt-sp1&lt;br&gt;Type: Custom Intercept&lt;br&gt;Organization-level" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffab91;strokeColor=#bf360c;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="580" width="280" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="security-profile-group" value="Security Profile Group&lt;br&gt;newfgt-nsi-ftnt-spg1&lt;br&gt;Contains: newfgt-nsi-ftnt-sp1&lt;br&gt;Organization-level" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffab91;strokeColor=#bf360c;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="670" width="280" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="fw-policy" value="Network Firewall Policy&lt;br&gt;newfgt-nsi&lt;br&gt;Scope: Global" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ef9a9a;strokeColor=#c62828;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="760" width="280" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="fw-rules-container" value="Firewall Policy Rules" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e57373;strokeColor=#c62828;verticalAlign=top;fontSize=11;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="840" width="280" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="fw-rule-ingress" value="Rule 10: INGRESS - Apply SPG" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ef5350;strokeColor=#c62828;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="860" width="240" height="15" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="fw-rule-egress" value="Rule 11: EGRESS - Apply SPG" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ef5350;strokeColor=#c62828;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="880" width="240" height="15" as="geometry"/>
+        </mxCell>
+
+        <!-- VPC Peering -->
+        <mxCell id="vpc-peering" value="VPC Peering&lt;br&gt;web-to-web2&lt;br&gt;Bidirectional" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b39ddb;strokeColor=#4527a0;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="600" y="820" width="200" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- External Components -->
+        <mxCell id="internet" value="Internet" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#7b1fa2;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="940" width="120" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="nsi-client" value="NSI Client&lt;br&gt;Traffic Source&lt;br&gt;(Geneve Encapsulation)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#7b1fa2;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="840" y="940" width="200" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- Firewall Rules -->
+        <mxCell id="firewall-container" value="VPC Firewall Rules" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffcdd2;strokeColor=#c62828;verticalAlign=top;fontSize=14;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="940" width="360" height="200" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="fw-inspection" value="Inspection VPC: Allow All" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ef9a9a;strokeColor=#c62828;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="990" width="280" height="25" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="fw-management" value="Management VPC: Allow All" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ef9a9a;strokeColor=#c62828;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="1025" width="280" height="25" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="fw-health-check" value="Health Check: 130.211.0.0/22, 35.191.0.0/16" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ef9a9a;strokeColor=#c62828;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="1060" width="280" height="25" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="fw-web-servers" value="Web Servers: SSH, HTTPS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ef9a9a;strokeColor=#c62828;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="1095" width="280" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- Connections/Arrows -->
+        <!-- Template to MIG -->
+        <mxCell id="arrow1" value="" style="endArrow=classic;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.1;strokeColor=#f57f17;strokeWidth=2;dashed=1;" edge="1" parent="1" source="instance-template" target="mig">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="840" y="200" as="sourcePoint"/>
+            <mxPoint x="890" y="150" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- FortiGates to Inspection Subnet -->
+        <mxCell id="arrow2" value="Port1" style="endArrow=classic;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.25;strokeColor=#01579b;strokeWidth=2;" edge="1" parent="1" source="fgt1" target="inspection-subnet">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="640" y="380" as="sourcePoint"/>
+            <mxPoint x="500" y="180" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow3" value="Port1" style="endArrow=classic;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.5;strokeColor=#01579b;strokeWidth=2;" edge="1" parent="1" source="fgt2" target="inspection-subnet">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="780" y="380" as="sourcePoint"/>
+            <mxPoint x="500" y="200" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow4" value="Port1" style="endArrow=classic;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.75;strokeColor=#01579b;strokeWidth=2;" edge="1" parent="1" source="fgt3" target="inspection-subnet">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="920" y="380" as="sourcePoint"/>
+            <mxPoint x="500" y="220" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- FortiGates to Management Subnet -->
+        <mxCell id="arrow5" value="Port2" style="endArrow=classic;html=1;exitX=0;exitY=1;entryX=1;entryY=0.25;strokeColor=#e65100;strokeWidth=2;" edge="1" parent="1" source="fgt1" target="management-subnet">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="680" y="420" as="sourcePoint"/>
+            <mxPoint x="500" y="525" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow6" value="Port2" style="endArrow=classic;html=1;exitX=0;exitY=1;entryX=1;entryY=0.5;strokeColor=#e65100;strokeWidth=2;" edge="1" parent="1" source="fgt2" target="management-subnet">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="820" y="420" as="sourcePoint"/>
+            <mxPoint x="500" y="550" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow7" value="Port2" style="endArrow=classic;html=1;exitX=0;exitY=1;entryX=1;entryY=0.75;strokeColor=#e65100;strokeWidth=2;" edge="1" parent="1" source="fgt3" target="management-subnet">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="960" y="420" as="sourcePoint"/>
+            <mxPoint x="500" y="575" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Health Check to FortiGates -->
+        <mxCell id="arrow8" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=1;strokeColor=#2e7d32;strokeWidth=2;dashed=1;" edge="1" parent="1" source="health-check" target="fgt2">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="860" y="440" as="sourcePoint"/>
+            <mxPoint x="880" y="430" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Backend Service to Forwarding Rules -->
+        <mxCell id="arrow9" value="" style="endArrow=classic;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#2e7d32;strokeWidth=2;" edge="1" parent="1" source="ilb" target="forwarding-rules-container">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="480" y="310" as="sourcePoint"/>
+            <mxPoint x="680" y="555" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- NSI Client to Forwarding Rules -->
+        <mxCell id="arrow10" value="Geneve UDP:6081" style="endArrow=classic;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=1;strokeColor=#7b1fa2;strokeWidth=3;" edge="1" parent="1" source="nsi-client" target="forwarding-rules-container">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="940" y="920" as="sourcePoint"/>
+            <mxPoint x="860" y="600" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Forwarding Rules to Intercept Deployments -->
+        <mxCell id="arrow11" value="" style="endArrow=classic;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;strokeColor=#bf360c;strokeWidth=2;" edge="1" parent="1" source="forwarding-rules-container" target="intercept-dep-container">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1040" y="555" as="sourcePoint"/>
+            <mxPoint x="1200" y="315" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Intercept Deployment Group to Intercept Deployments -->
+        <mxCell id="arrow12" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#bf360c;strokeWidth=2;dashed=1;" edge="1" parent="1" source="intercept-dg" target="intercept-dep-container">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1340" y="230" as="sourcePoint"/>
+            <mxPoint x="1340" y="250" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Intercept Endpoint Group to Associations -->
+        <mxCell id="arrow13" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#bf360c;strokeWidth=2;dashed=1;" edge="1" parent="1" source="intercept-epg" target="epg-assoc-container">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1340" y="460" as="sourcePoint"/>
+            <mxPoint x="1340" y="480" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- EPG Associations to VPCs -->
+        <mxCell id="arrow14" value="Intercept" style="endArrow=classic;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.5;strokeColor=#2e7d32;strokeWidth=2;dashed=1;" edge="1" parent="1" source="epg-assoc-web" target="web-vpc">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1200" y="520" as="sourcePoint"/>
+            <mxPoint x="520" y="790" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow15" value="Intercept" style="endArrow=classic;html=1;exitX=0;exitY=0.5;entryX=1;entryY=0.25;strokeColor=#7b1fa2;strokeWidth=2;dashed=1;" edge="1" parent="1" source="epg-assoc-web2" target="web2-vpc">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1200" y="545" as="sourcePoint"/>
+            <mxPoint x="520" y="990" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Security Profile to Profile Group -->
+        <mxCell id="arrow16" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#bf360c;strokeWidth=2;dashed=1;" edge="1" parent="1" source="security-profile" target="security-profile-group">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1340" y="650" as="sourcePoint"/>
+            <mxPoint x="1340" y="670" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Security Profile Group to Firewall Policy -->
+        <mxCell id="arrow17" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#c62828;strokeWidth=2;" edge="1" parent="1" source="security-profile-group" target="fw-policy">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1340" y="740" as="sourcePoint"/>
+            <mxPoint x="1340" y="760" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Firewall Policy to Rules -->
+        <mxCell id="arrow18" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;strokeColor=#c62828;strokeWidth=2;dashed=1;" edge="1" parent="1" source="fw-policy" target="fw-rules-container">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1340" y="820" as="sourcePoint"/>
+            <mxPoint x="1340" y="840" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- VPC Peering -->
+        <mxCell id="arrow19" value="Peering" style="endArrow=classic;startArrow=classic;html=1;exitX=0;exitY=0.5;entryX=1;entryY=1;strokeColor=#4527a0;strokeWidth=2;dashed=1;" edge="1" parent="1" source="vpc-peering" target="web-vpc">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="600" y="850" as="sourcePoint"/>
+            <mxPoint x="520" y="900" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow20" value="Peering" style="endArrow=classic;startArrow=classic;html=1;exitX=0;exitY=1;entryX=1;entryY=0.25;strokeColor=#4527a0;strokeWidth=2;dashed=1;" edge="1" parent="1" source="vpc-peering" target="web2-vpc">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="600" y="880" as="sourcePoint"/>
+            <mxPoint x="520" y="990" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Internet to Management -->
+        <mxCell id="arrow21" value="HTTPS:8443" style="endArrow=classic;html=1;exitX=0.5;exitY=0;entryX=0;entryY=1;strokeColor=#e65100;strokeWidth=2;" edge="1" parent="1" source="internet" target="management-vpc">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="660" y="940" as="sourcePoint"/>
+            <mxPoint x="520" y="640" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Legend -->
+        <mxCell id="legend" value="Legend" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;verticalAlign=top;fontSize=12;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="840" y="1060" width="280" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="legend-terraform" value="■ Terraform-created resources" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="860" y="1085" width="240" height="15" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="legend-gcloud" value="■ gcloud-created NSI resources" style="text;html=1;strokeColor=none;fillColor=#ffccbc;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="860" y="1105" width="240" height="15" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="legend-traffic" value="━━ Traffic Flow" style="text;html=1;strokeColor=#7b1fa2;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="860" y="1125" width="240" height="15" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="legend-dashed" value="┉┉ Control/Association" style="text;html=1;strokeColor=#000000;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="860" y="1140" width="240" height="15" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
